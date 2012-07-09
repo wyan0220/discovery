@@ -113,17 +113,6 @@ public class DynamicAnnouncement
         return result;
     }
 
-    @Override
-    public String toString()
-    {
-        return "DynamicAnnouncement{" +
-                "environment='" + environment + '\'' +
-                ", location='" + location + '\'' +
-                ", pool='" + pool + '\'' +
-                ", services=" + services +
-                '}';
-    }
-
     public static Builder copyOf(DynamicAnnouncement announcement)
     {
         return new Builder().copyOf(announcement);
@@ -156,5 +145,12 @@ public class DynamicAnnouncement
         {
             return new DynamicAnnouncement(environment, pool, location, services);
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format("DynamicAnnouncement{environment:%s,location:%s,pool:%s,services:%s}", environment,
+                location, pool, services);
     }
 }

@@ -1,0 +1,11 @@
+package com.proofpoint.discovery.monitor;
+
+public enum DiscoveryEventType
+{
+    SERVICEQUERY,
+    STATICANNOUNCEMENT,
+    STATICANNOUNCEMENTLIST,
+    STATICANNOUNCEMENTDELETE,
+    DYNAMICANNOUNCEMENT,
+    DYNAMICANNOUNCEMENTDELETE
+}

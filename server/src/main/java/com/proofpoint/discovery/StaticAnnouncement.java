@@ -121,4 +121,11 @@ public class StaticAnnouncement
         result = 31 * result + (properties != null ? properties.hashCode() : 0);
         return result;
     }
+    
+    @Override
+    public String toString()
+    {
+        return String.format("StaticAnnouncement{environment:%s,type:%s,pool:%s,location:%s,properties:%s}", environment, type,
+                pool, location, properties);
+    }
 }

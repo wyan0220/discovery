@@ -29,7 +29,6 @@ import java.util.Collections;
 import static com.proofpoint.experimental.testing.ValidationAssertions.assertFailsValidation;
 import static com.proofpoint.experimental.testing.ValidationAssertions.assertValidates;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
 
 public class TestDynamicAnnouncement
 {
@@ -91,9 +90,10 @@ public class TestDynamicAnnouncement
     public void testToString()
     {
         DynamicAnnouncement announcement = new DynamicAnnouncement("testing", "pool", "/location", ImmutableSet.of(
-                new DynamicServiceAnnouncement(Id.<Service>random(), "type", Collections.<String, String>emptyMap()))
+                new DynamicServiceAnnouncement(Id.<Service>valueOf("50ad8530-2df6-4ff0-baa8-7a9c8d0abf51"), "type", Collections.<String, String>emptyMap()),
+                new DynamicServiceAnnouncement(Id.<Service>valueOf("5d528538-f907-4109-bbbd-8d609ab43225"), "type", Collections.<String, String>emptyMap()))
         );
 
-        assertNotNull(announcement.toString());
+        assertEquals(announcement.toString(), "DynamicAnnouncement{environment:testing,location:/location,pool:pool,services:[ServiceAnnouncement{id=50ad8530-2df6-4ff0-baa8-7a9c8d0abf51, type='type', properties={}}, ServiceAnnouncement{id=5d528538-f907-4109-bbbd-8d609ab43225, type='type', properties={}}]}");
     }
 }

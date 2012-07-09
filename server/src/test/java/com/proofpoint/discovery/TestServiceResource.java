@@ -17,14 +17,22 @@ package com.proofpoint.discovery;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.proofpoint.discovery.monitor.DiscoveryMonitor;
+import com.proofpoint.discovery.monitor.DiscoveryStats;
+import com.proofpoint.event.client.InMemoryEventClient;
+import com.proofpoint.jaxrs.testing.MockUriInfo;
 import com.proofpoint.node.NodeInfo;
+import org.mockito.Mockito;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriInfo;
 import java.util.Collections;
 
 import static com.google.common.collect.ImmutableSet.of;
 import static com.proofpoint.discovery.DynamicServiceAnnouncement.toServiceWith;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 
 public class TestServiceResource
@@ -32,13 +40,23 @@ public class TestServiceResource
     private InMemoryDynamicStore dynamicStore;
     private InMemoryStaticStore staticStore;
     private ServiceResource resource;
+    private InMemoryEventClient eventClient;
+    private DiscoveryStats discoveryStats;
+    private HttpServletRequest httpServletRequest;
+    private final UriInfo uriInfo = MockUriInfo.from("http://localhost:4111/v1/service");
 
     @BeforeMethod
     protected void setUp()
     {
         dynamicStore = new InMemoryDynamicStore(new DiscoveryConfig(), new TestingTimeProvider());
         staticStore = new InMemoryStaticStore();
-        resource = new ServiceResource(dynamicStore, staticStore, new NodeInfo("testing"));
+        eventClient = new InMemoryEventClient();
+        discoveryStats = new DiscoveryStats();
+        httpServletRequest = Mockito.mock(HttpServletRequest.class);
+        when(httpServletRequest.getRemoteAddr()).thenReturn("127.0.0.1");
+
+        resource = new ServiceResource(dynamicStore, staticStore, new NodeInfo("testing"),
+                new DiscoveryMonitor(eventClient, discoveryStats));
     }
 
     @Test
@@ -61,15 +79,15 @@ public class TestServiceResource
         dynamicStore.put(greenNodeId, green);
         dynamicStore.put(blueNodeId, blue);
 
-        assertEquals(resource.getServices("storage"), new Services("testing", of(
+        assertEquals(resource.getServices(httpServletRequest, uriInfo, "storage"), new Services("testing", of(
                 toServiceWith(redNodeId, red.getLocation(), red.getPool()).apply(redStorage),
                 toServiceWith(greenNodeId, green.getLocation(), green.getPool()).apply(greenStorage),
                 toServiceWith(blueNodeId, blue.getLocation(), blue.getPool()).apply(blueStorage))));
 
-        assertEquals(resource.getServices("web"), new Services("testing", ImmutableSet.of(
+        assertEquals(resource.getServices(httpServletRequest, uriInfo, "web"), new Services("testing", ImmutableSet.of(
                 toServiceWith(redNodeId, red.getLocation(), red.getPool()).apply(redWeb))));
 
-        assertEquals(resource.getServices("unknown"), new Services("testing", Collections.<Service>emptySet()));
+        assertEquals(resource.getServices(httpServletRequest, uriInfo, "unknown"), new Services("testing", Collections.<Service>emptySet()));
     }
 
     @Test
@@ -92,13 +110,13 @@ public class TestServiceResource
         dynamicStore.put(greenNodeId, green);
         dynamicStore.put(blueNodeId, blue);
 
-        assertEquals(resource.getServices("storage", "alpha"), new Services("testing", ImmutableSet.of(
+        assertEquals(resource.getServices(httpServletRequest, uriInfo, "storage", "alpha"), new Services("testing", ImmutableSet.of(
                 toServiceWith(redNodeId, red.getLocation(), red.getPool()).apply(redStorage),
                 toServiceWith(greenNodeId, green.getLocation(), green.getPool()).apply(greenStorage))));
 
-        assertEquals(resource.getServices("storage", "beta"), new Services("testing", ImmutableSet.of(toServiceWith(blueNodeId, blue.getLocation(), blue.getPool()).apply(blueStorage))));
+        assertEquals(resource.getServices(httpServletRequest, uriInfo, "storage", "beta"), new Services("testing", ImmutableSet.of(toServiceWith(blueNodeId, blue.getLocation(), blue.getPool()).apply(blueStorage))));
 
-        assertEquals(resource.getServices("storage", "unknown"), new Services("testing", Collections.<Service>emptySet()));
+        assertEquals(resource.getServices(httpServletRequest, uriInfo, "storage", "unknown"), new Services("testing", Collections.<Service>emptySet()));
     }
 
     @Test
@@ -121,7 +139,7 @@ public class TestServiceResource
         dynamicStore.put(greenNodeId, green);
         dynamicStore.put(blueNodeId, blue);
 
-        assertEquals(resource.getServices(), new Services("testing", ImmutableSet.of(
+        assertEquals(resource.getServices(httpServletRequest, uriInfo), new Services("testing", ImmutableSet.of(
                 toServiceWith(redNodeId, red.getLocation(), red.getPool()).apply(redStorage),
                 toServiceWith(redNodeId, red.getLocation(), red.getPool()).apply(redWeb),
                 toServiceWith(greenNodeId, green.getLocation(), green.getPool()).apply(greenStorage),

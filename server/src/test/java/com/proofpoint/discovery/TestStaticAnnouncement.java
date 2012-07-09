@@ -136,4 +136,11 @@ public class TestStaticAnnouncement
             // an exception is ok, too
         }
     }
+
+    @Test
+    public void testToString()
+    {
+        StaticAnnouncement announcement = new StaticAnnouncement("testing", "type", "pool", "/a/b", ImmutableMap.of("key1", "value1", "key2", "value2"));
+        assertEquals(announcement.toString(), "StaticAnnouncement{environment:testing,type:type,pool:pool,location:/a/b,properties:{key1=value1, key2=value2}}");
+    }
 }
