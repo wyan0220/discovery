@@ -15,6 +15,7 @@
  */
 package com.proofpoint.discovery;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -125,7 +126,12 @@ public class StaticAnnouncement
     @Override
     public String toString()
     {
-        return String.format("StaticAnnouncement{environment:%s,type:%s,pool:%s,location:%s,properties:%s}", environment, type,
-                pool, location, properties);
+        return Objects.toStringHelper(this.getClass())
+                .add("environment", environment)
+                .add("pool", pool)
+                .add("location", location)
+                .add("type", type)
+                .add("properties", properties)
+                .toString();
     }
 }

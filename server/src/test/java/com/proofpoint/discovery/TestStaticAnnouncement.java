@@ -80,32 +80,32 @@ public class TestStaticAnnouncement
         equivalenceTester()
                 // vary fields, one by one
                 .addEquivalentGroup(new StaticAnnouncement("testing", "blue", "poolA", "/a/b", ImmutableMap.of("key", "valueA")),
-                                    new StaticAnnouncement("testing", "blue", "poolA", "/a/b", ImmutableMap.of("key", "valueA")))
+                        new StaticAnnouncement("testing", "blue", "poolA", "/a/b", ImmutableMap.of("key", "valueA")))
                 .addEquivalentGroup(new StaticAnnouncement("testing", "blue", "poolA", "/a/b", ImmutableMap.of("key", "valueB")),
-                                    new StaticAnnouncement("testing", "blue", "poolA", "/a/b", ImmutableMap.of("key", "valueB")))
+                        new StaticAnnouncement("testing", "blue", "poolA", "/a/b", ImmutableMap.of("key", "valueB")))
                 .addEquivalentGroup(new StaticAnnouncement("testing", "blue", "poolB", "/a/b", ImmutableMap.of("key", "valueA")),
-                                    new StaticAnnouncement("testing", "blue", "poolB", "/a/b", ImmutableMap.of("key", "valueA")))
+                        new StaticAnnouncement("testing", "blue", "poolB", "/a/b", ImmutableMap.of("key", "valueA")))
                 .addEquivalentGroup(new StaticAnnouncement("testing", "red", "poolA", "/a/b", ImmutableMap.of("key", "valueA")),
-                                    new StaticAnnouncement("testing", "red", "poolA", "/a/b", ImmutableMap.of("key", "valueA")))
+                        new StaticAnnouncement("testing", "red", "poolA", "/a/b", ImmutableMap.of("key", "valueA")))
                 .addEquivalentGroup(new StaticAnnouncement("testing", "red", "poolA", "/x/y", ImmutableMap.of("key", "valueA")),
-                                    new StaticAnnouncement("testing", "red", "poolA", "/x/y", ImmutableMap.of("key", "valueA")))
+                        new StaticAnnouncement("testing", "red", "poolA", "/x/y", ImmutableMap.of("key", "valueA")))
                 .addEquivalentGroup(new StaticAnnouncement("production", "blue", "poolA", "/a/b", ImmutableMap.of("key", "valueA")),
-                                    new StaticAnnouncement("production", "blue", "poolA", "/a/b", ImmutableMap.of("key", "valueA")))
+                        new StaticAnnouncement("production", "blue", "poolA", "/a/b", ImmutableMap.of("key", "valueA")))
                         // null fields
                 .addEquivalentGroup(new StaticAnnouncement("testing", "blue", "poolA", "/a/b", null),
-                                    new StaticAnnouncement("testing", "blue", "poolA", "/a/b", null))
+                        new StaticAnnouncement("testing", "blue", "poolA", "/a/b", null))
                 .addEquivalentGroup(new StaticAnnouncement("testing", "blue", null, "/a/b", ImmutableMap.of("key", "valueA")),
-                                    new StaticAnnouncement("testing", "blue", null, "/a/b", ImmutableMap.of("key", "valueA")))
+                        new StaticAnnouncement("testing", "blue", null, "/a/b", ImmutableMap.of("key", "valueA")))
                 .addEquivalentGroup(new StaticAnnouncement("testing", null, "poolA", "/a/b", ImmutableMap.of("key", "valueA")),
-                                    new StaticAnnouncement("testing", null, "poolA", "/a/b", ImmutableMap.of("key", "valueA")))
+                        new StaticAnnouncement("testing", null, "poolA", "/a/b", ImmutableMap.of("key", "valueA")))
                 .addEquivalentGroup(new StaticAnnouncement("testing", "blue", "poolA", null, ImmutableMap.of("key", "valueA")),
-                                    new StaticAnnouncement("testing", "blue", "poolA", null, ImmutableMap.of("key", "valueA")))
+                        new StaticAnnouncement("testing", "blue", "poolA", null, ImmutableMap.of("key", "valueA")))
                 .addEquivalentGroup(new StaticAnnouncement(null, "blue", "poolA", "/a/b", ImmutableMap.of("key", "valueA")),
-                                    new StaticAnnouncement(null, "blue", "poolA", "/a/b", ImmutableMap.of("key", "valueA")))
+                        new StaticAnnouncement(null, "blue", "poolA", "/a/b", ImmutableMap.of("key", "valueA")))
 
                         // empty properties
                 .addEquivalentGroup(new StaticAnnouncement("testing", "blue", "poolA", "/a/b", Collections.<String, String>emptyMap()),
-                                    new StaticAnnouncement("testing", "blue", "poolA", "/a/b", Collections.<String, String>emptyMap()))
+                        new StaticAnnouncement("testing", "blue", "poolA", "/a/b", Collections.<String, String>emptyMap()))
                 .check();
     }
 
@@ -141,6 +141,6 @@ public class TestStaticAnnouncement
     public void testToString()
     {
         StaticAnnouncement announcement = new StaticAnnouncement("testing", "type", "pool", "/a/b", ImmutableMap.of("key1", "value1", "key2", "value2"));
-        assertEquals(announcement.toString(), "StaticAnnouncement{environment:testing,type:type,pool:pool,location:/a/b,properties:{key1=value1, key2=value2}}");
+        assertEquals(announcement.toString(), "StaticAnnouncement{environment=testing, pool=pool, location=/a/b, type=type, properties={key1=value1, key2=value2}}");
     }
 }

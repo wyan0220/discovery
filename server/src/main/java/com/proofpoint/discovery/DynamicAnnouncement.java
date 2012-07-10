@@ -15,6 +15,7 @@
  */
 package com.proofpoint.discovery;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -150,7 +151,11 @@ public class DynamicAnnouncement
     @Override
     public String toString()
     {
-        return String.format("DynamicAnnouncement{environment:%s,location:%s,pool:%s,services:%s}", environment,
-                location, pool, services);
+        return Objects.toStringHelper(this.getClass())
+                .add("environment", environment)
+                .add("pool", pool)
+                .add("location", location)
+                .add("services", services)
+                .toString();
     }
 }

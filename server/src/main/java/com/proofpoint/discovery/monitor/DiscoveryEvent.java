@@ -1,5 +1,6 @@
 package com.proofpoint.discovery.monitor;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.proofpoint.event.client.EventField;
@@ -115,7 +116,12 @@ public class DiscoveryEvent
     @Override
     public String toString()
     {
-        return String.format("DiscoveryEvent{type:%s,success:%s,remoteAddress:%s,requestUri:%s,requestBodyJson:%s,processingDuration:%s}",
-                type, success, remoteAddress, requestUri, (requestBodyJson == null) ? "" : requestBodyJson, processingDuration);
+        return Objects.toStringHelper(this.getClass())
+                .add("type", type)
+                .add("success", success)
+                .add("remoteAddress", remoteAddress)
+                .add("requestUri", requestUri)
+                .add("requestBodyJson", requestBodyJson == null ? "" : requestBodyJson)
+                .add("processingDuration", processingDuration).toString();
     }
 }

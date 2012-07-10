@@ -3,7 +3,6 @@ package com.proofpoint.discovery.monitor;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.proofpoint.event.client.EventClient;
-import com.proofpoint.log.Logger;
 import com.proofpoint.units.Duration;
 
 import java.util.concurrent.TimeUnit;
@@ -12,7 +11,6 @@ public class DiscoveryMonitor
 {
     private final EventClient eventClient;
     private final DiscoveryStats stats;
-    private final Logger log = Logger.get(DiscoveryMonitor.class);
 
     @Inject
     public DiscoveryMonitor(EventClient eventClient, DiscoveryStats stats)
@@ -31,6 +29,5 @@ public class DiscoveryMonitor
     public void monitorDiscoveryFailureEvent(DiscoveryEventType type, Exception e, String requestUri)
     {
         eventClient.post(new DiscoveryFailureEvent(type, e, requestUri));
-        log.warn(e, String.format("discovery request [%s] failed", requestUri));
     }
 }
