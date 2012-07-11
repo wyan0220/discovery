@@ -31,7 +31,7 @@ public class TestDiscoveryMonitor
         assertEquals(stats.getServiceQuerySuccessCount(), 1);
         assertEquals(stats.getServiceQueryProcessingTime().getCount(), 1);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.SERVICEQUERY);
+        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.SERVICEQUERY.name());
     }
 
     @Test
@@ -41,7 +41,7 @@ public class TestDiscoveryMonitor
         assertEquals(stats.getStaticAnnouncementFailureCount(), 1);
         assertEquals(stats.getStaticAnnouncementProcessingTime().getCount(), 1);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENT);
+        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENT.name());
     }
 
     @Test
@@ -51,7 +51,7 @@ public class TestDiscoveryMonitor
         assertEquals(stats.getStaticAnnouncementListFailureCount(), 1);
         assertEquals(stats.getStaticAnnouncementListProcessingTime().getCount(), 1);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENTLIST);
+        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENTLIST.name());
     }
 
     @Test
@@ -61,7 +61,7 @@ public class TestDiscoveryMonitor
         assertEquals(stats.getStaticAnnouncementDeleteSuccessCount(), 1);
         assertEquals(stats.getStaticAnnouncementDeleteProcessingTime().getCount(), 1);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENTDELETE);
+        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENTDELETE.name());
     }
 
     @Test
@@ -71,7 +71,7 @@ public class TestDiscoveryMonitor
         assertEquals(stats.getDynamicAnnouncementFailureCount(), 1);
         assertEquals(stats.getDynamicAnnouncementProcessingTime().getCount(), 1);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT);
+        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT.name());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class TestDiscoveryMonitor
         assertEquals(stats.getDynamicAnnouncementDeleteSuccessCount(), 1);
         assertEquals(stats.getDynamicAnnouncementDeleteProcessingTime().getCount(), 1);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE);
+        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE.name());
     }
 
     @Test
@@ -89,7 +89,7 @@ public class TestDiscoveryMonitor
     {
         monitor.monitorDiscoveryFailureEvent(DiscoveryEventType.SERVICEQUERY, new NullPointerException(), requestUri);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryFailureEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.SERVICEQUERY);
+        assertEquals(((DiscoveryFailureEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.SERVICEQUERY.name());
     }
 
     @Test
@@ -97,7 +97,7 @@ public class TestDiscoveryMonitor
     {
         monitor.monitorDiscoveryFailureEvent(DiscoveryEventType.STATICANNOUNCEMENT, new NullPointerException(), requestUri);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryFailureEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENT);
+        assertEquals(((DiscoveryFailureEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENT.name());
     }
 
     @Test
@@ -105,7 +105,7 @@ public class TestDiscoveryMonitor
     {
         monitor.monitorDiscoveryFailureEvent(DiscoveryEventType.STATICANNOUNCEMENTLIST, new NullPointerException(), requestUri);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryFailureEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENTLIST);
+        assertEquals(((DiscoveryFailureEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENTLIST.name());
     }
 
     @Test
@@ -113,7 +113,7 @@ public class TestDiscoveryMonitor
     {
         monitor.monitorDiscoveryFailureEvent(DiscoveryEventType.STATICANNOUNCEMENTDELETE, new NullPointerException(), requestUri);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryFailureEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENTDELETE);
+        assertEquals(((DiscoveryFailureEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENTDELETE.name());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class TestDiscoveryMonitor
     {
         monitor.monitorDiscoveryFailureEvent(DiscoveryEventType.DYNAMICANNOUNCEMENT, new NullPointerException(), requestUri);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryFailureEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT);
+        assertEquals(((DiscoveryFailureEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT.name());
     }
 
     @Test
@@ -129,6 +129,6 @@ public class TestDiscoveryMonitor
     {
         monitor.monitorDiscoveryFailureEvent(DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE, new NullPointerException(), requestUri);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryFailureEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE);
+        assertEquals(((DiscoveryFailureEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE.name());
     }
 }

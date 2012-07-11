@@ -79,7 +79,7 @@ public class TestDynamicAnnouncementResource
         assertEquals(discoveryStats.getDynamicAnnouncementSuccessCount(), 1);
         assertEquals(discoveryStats.getDynamicAnnouncementFailureCount(), 0);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT);
+        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT.name());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class TestDynamicAnnouncementResource
         assertEquals(discoveryStats.getDynamicAnnouncementSuccessCount(), 1);
         assertEquals(discoveryStats.getDynamicAnnouncementFailureCount(), 0);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT);
+        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT.name());
     }
 
     @Test
@@ -127,7 +127,7 @@ public class TestDynamicAnnouncementResource
         assertEquals(discoveryStats.getDynamicAnnouncementSuccessCount(), 1);
         assertEquals(discoveryStats.getDynamicAnnouncementFailureCount(), 0);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT);
+        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT.name());
     }
 
     @Test
@@ -156,7 +156,7 @@ public class TestDynamicAnnouncementResource
         assertEquals(discoveryStats.getDynamicAnnouncementDeleteSuccessCount(), 1);
         assertEquals(discoveryStats.getDynamicAnnouncementDeleteFailureCount(), 0);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE);
+        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE.name());
     }
 
     @Test
@@ -172,7 +172,7 @@ public class TestDynamicAnnouncementResource
         assertEquals(discoveryStats.getDynamicAnnouncementDeleteSuccessCount(), 1);
         assertEquals(discoveryStats.getDynamicAnnouncementDeleteFailureCount(), 0);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE);
+        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE.name());
     }
 
     @Test
@@ -196,6 +196,6 @@ public class TestDynamicAnnouncementResource
         assertEquals(discoveryStats.getDynamicAnnouncementSuccessCount(), 1);
         assertEquals(discoveryStats.getDynamicAnnouncementFailureCount(), 0);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT);
+        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT.name());
     }
 }

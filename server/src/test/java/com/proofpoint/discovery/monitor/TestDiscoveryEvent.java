@@ -59,12 +59,12 @@ public class TestDiscoveryEvent
     {
         Duration duration = Duration.nanosSince(startTime);
         DiscoveryEvent event = new DiscoveryEvent(DiscoveryEventType.DYNAMICANNOUNCEMENT, true, "remote address 1", "request uri 1", "request body json", duration);
-        assertEquals(event.getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT);
+        assertEquals(event.getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT.name());
         assertEquals(event.isSuccess(), true);
         assertEquals(event.getRemoteAddress(), "remote address 1");
         assertEquals(event.getRequestUri(), "request uri 1");
         assertEquals(event.getRequestBodyJson(), "request body json");
-        assertEquals(event.getProcessingDuration(), duration);
+        assertEquals(event.getProcessingDuration(), duration.toMillis());
     }
 
     @Test

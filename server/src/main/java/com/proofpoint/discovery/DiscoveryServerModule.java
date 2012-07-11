@@ -23,6 +23,8 @@ import com.google.inject.Scopes;
 import com.proofpoint.discovery.client.ServiceDescriptor;
 import com.proofpoint.discovery.client.ServiceInventory;
 import com.proofpoint.discovery.client.ServiceSelector;
+import com.proofpoint.discovery.monitor.DiscoveryEvent;
+import com.proofpoint.discovery.monitor.DiscoveryFailureEvent;
 import com.proofpoint.discovery.monitor.DiscoveryMonitor;
 import com.proofpoint.discovery.monitor.DiscoveryStats;
 import com.proofpoint.discovery.store.InMemoryStore;
@@ -39,6 +41,7 @@ import java.util.List;
 
 import static com.proofpoint.configuration.ConfigurationModule.bindConfig;
 import static com.proofpoint.discovery.client.DiscoveryBinder.discoveryBinder;
+import static com.proofpoint.event.client.EventBinder.eventBinder;
 
 public class DiscoveryServerModule
         implements Module
@@ -63,6 +66,10 @@ public class DiscoveryServerModule
         binder.bind(StaticStore.class).to(ReplicatedStaticStore.class).in(Scopes.SINGLETON);
         binder.install(new ReplicatedStoreModule("static", ForStaticStore.class, PersistentStore.class));
         bindConfig(binder).prefixedWith("static").to(PersistentStoreConfig.class);
+
+        // event
+        eventBinder(binder).bindEventClient(DiscoveryEvent.class);
+        eventBinder(binder).bindEventClient(DiscoveryFailureEvent.class);
     }
 
     @Singleton

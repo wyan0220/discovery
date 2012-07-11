@@ -22,15 +22,15 @@ public class DiscoveryFailureEvent
     }
 
     @EventField
-    public DiscoveryEventType getType()
+    public String getType()
     {
-        return type;
+        return type.name();
     }
 
     @EventField
-    public Exception getException()
+    public String getException()
     {
-        return exception;
+        return exception.getMessage();
     }
 
     @EventField

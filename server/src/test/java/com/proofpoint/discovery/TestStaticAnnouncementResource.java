@@ -81,7 +81,7 @@ public class TestStaticAnnouncementResource
         assertEquals(discoveryStats.getStaticAnnouncementSuccessCount(), 1);
         assertEquals(discoveryStats.getStaticAnnouncementFailureCount(), 0);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent)eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENT);
+        assertEquals(((DiscoveryEvent)eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENT.name());
     }
 
     @Test
@@ -99,7 +99,7 @@ public class TestStaticAnnouncementResource
         assertEquals(discoveryStats.getStaticAnnouncementSuccessCount(), 1);
         assertEquals(discoveryStats.getStaticAnnouncementFailureCount(), 0);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent)eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENT);
+        assertEquals(((DiscoveryEvent)eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENT.name());
     }
 
     @Test
@@ -117,7 +117,7 @@ public class TestStaticAnnouncementResource
         assertEquals(discoveryStats.getStaticAnnouncementDeleteSuccessCount(), 1);
         assertEquals(discoveryStats.getStaticAnnouncementDeleteFailureCount(), 0);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent)eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENTDELETE);
+        assertEquals(((DiscoveryEvent)eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENTDELETE.name());
     }
 
     @Test
@@ -138,7 +138,7 @@ public class TestStaticAnnouncementResource
         assertEquals(discoveryStats.getStaticAnnouncementSuccessCount(), 1);
         assertEquals(discoveryStats.getStaticAnnouncementFailureCount(), 0);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent)eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENT);
+        assertEquals(((DiscoveryEvent)eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENT.name());
     }
 
     @Test
@@ -158,6 +158,6 @@ public class TestStaticAnnouncementResource
         assertEquals(discoveryStats.getStaticAnnouncementListSuccessCount(), 1);
         assertEquals(discoveryStats.getStaticAnnouncementListFailureCount(), 0);
         assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent)eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENTLIST);
+        assertEquals(((DiscoveryEvent)eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENTLIST.name());
     }
 }

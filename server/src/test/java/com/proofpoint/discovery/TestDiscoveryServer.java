@@ -145,7 +145,7 @@ public class TestDiscoveryServer
         client.announce(ImmutableSet.of(announcement)).get();
 
         assertEquals(inMemoryEventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT);
+        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT.name());
         assertEquals(discoveryStats.getDynamicAnnouncementSuccessCount(), 1);
         assertEquals(discoveryStats.getDynamicAnnouncementProcessingTime().getCount(), 1);
 
@@ -162,7 +162,7 @@ public class TestDiscoveryServer
         assertEquals(service.getProperties(), announcement.getProperties());
 
         assertEquals(inMemoryEventClient.getEvents().size(), 2);
-        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(1)).getType(), DiscoveryEventType.SERVICEQUERY);
+        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(1)).getType(), DiscoveryEventType.SERVICEQUERY.name());
         assertEquals(discoveryStats.getServiceQuerySuccessCount(), 1);
         assertEquals(discoveryStats.getServiceQueryProcessingTime().getCount(), 1);
 
@@ -170,13 +170,13 @@ public class TestDiscoveryServer
         client.unannounce().get();
 
         assertEquals(inMemoryEventClient.getEvents().size(), 3);
-        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(2)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE);
+        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(2)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE.name());
         assertEquals(discoveryStats.getDynamicAnnouncementDeleteSuccessCount(), 1);
         assertEquals(discoveryStats.getDynamicAnnouncementDeleteProcessingTime().getCount(), 1);
 
         assertTrue(selectorFor("apple", "red").selectAllServices().isEmpty());
         assertEquals(inMemoryEventClient.getEvents().size(), 4);
-        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(3)).getType(), DiscoveryEventType.SERVICEQUERY);
+        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(3)).getType(), DiscoveryEventType.SERVICEQUERY.name());
         assertEquals(discoveryStats.getServiceQuerySuccessCount(), 2);
         assertEquals(discoveryStats.getServiceQueryProcessingTime().getCount(), 2);
     }
@@ -209,7 +209,7 @@ public class TestDiscoveryServer
                 .toString();
 
         assertEquals(inMemoryEventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENT);
+        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENT.name());
         assertEquals(discoveryStats.getStaticAnnouncementSuccessCount(), 1);
         assertEquals(discoveryStats.getStaticAnnouncementProcessingTime().getCount(), 1);
 
@@ -217,7 +217,7 @@ public class TestDiscoveryServer
         assertEquals(services.size(), 1);
 
         assertEquals(inMemoryEventClient.getEvents().size(), 2);
-        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(1)).getType(), DiscoveryEventType.SERVICEQUERY);
+        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(1)).getType(), DiscoveryEventType.SERVICEQUERY.name());
         assertEquals(discoveryStats.getServiceQuerySuccessCount(), 1);
         assertEquals(discoveryStats.getServiceQueryProcessingTime().getCount(), 1);
 
@@ -236,14 +236,14 @@ public class TestDiscoveryServer
         assertEquals(response.getStatusCode(), Status.NO_CONTENT.getStatusCode());
 
         assertEquals(inMemoryEventClient.getEvents().size(), 3);
-        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(2)).getType(), DiscoveryEventType.STATICANNOUNCEMENTDELETE);
+        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(2)).getType(), DiscoveryEventType.STATICANNOUNCEMENTDELETE.name());
         assertEquals(discoveryStats.getStaticAnnouncementDeleteSuccessCount(), 1);
         assertEquals(discoveryStats.getStaticAnnouncementDeleteProcessingTime().getCount(), 1);
 
         // ensure announcement is gone
         assertTrue(selectorFor("apple", "red").selectAllServices().isEmpty());
         assertEquals(inMemoryEventClient.getEvents().size(), 4);
-        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(3)).getType(), DiscoveryEventType.SERVICEQUERY);
+        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(3)).getType(), DiscoveryEventType.SERVICEQUERY.name());
         assertEquals(discoveryStats.getServiceQuerySuccessCount(), 2);
         assertEquals(discoveryStats.getServiceQueryProcessingTime().getCount(), 2);
     }

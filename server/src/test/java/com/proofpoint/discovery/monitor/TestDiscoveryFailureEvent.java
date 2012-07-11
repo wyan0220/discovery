@@ -44,8 +44,8 @@ public class TestDiscoveryFailureEvent
     {
         Exception exception = new ArrayIndexOutOfBoundsException();
         DiscoveryFailureEvent event = new DiscoveryFailureEvent(DiscoveryEventType.DYNAMICANNOUNCEMENT, exception, "request uri 1");
-        assertEquals(event.getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT);
-        assertEquals(event.getException(), exception);
+        assertEquals(event.getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT.name());
+        assertEquals(event.getException(), exception.getMessage());
         assertEquals(event.getRequestUri(), "request uri 1");
     }
 

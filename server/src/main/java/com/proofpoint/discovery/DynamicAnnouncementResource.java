@@ -83,7 +83,7 @@ public class DynamicAnnouncementResource
         }
         finally {
             discoveryMonitor.monitorDiscoveryEvent(DiscoveryEventType.DYNAMICANNOUNCEMENT, success, httpServletRequest.getRemoteAddr(),
-                    uriInfo.getRequestUri().toString(), nodeId.get().toString(), startTime);
+                    uriInfo.getRequestUri().toString(), announcement.toString(), startTime);
         }
     }
 

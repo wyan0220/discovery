@@ -32,9 +32,9 @@ public class DiscoveryEvent
     }
 
     @EventField
-    public DiscoveryEventType getType()
+    public String getType()
     {
-        return type;
+        return type.name();
     }
 
     @EventField
@@ -62,9 +62,9 @@ public class DiscoveryEvent
     }
 
     @EventField
-    public Duration getProcessingDuration()
+    public double getProcessingDuration()
     {
-        return processingDuration;
+        return processingDuration.toMillis();
     }
 
     @Override
