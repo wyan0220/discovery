@@ -96,6 +96,6 @@ public class TestDiscoveryEvent
         DiscoveryEvent event = new DiscoveryEvent(DiscoveryEventType.DYNAMICANNOUNCEMENT, true, "remote address 1", "request uri 1", "request body json", Duration.nanosSince(System.nanoTime() - 1000));
         assertTrue(event.toString().startsWith("DiscoveryEvent{type=DYNAMICANNOUNCEMENT, success=true, remoteAddress=remote address 1, requestUri=request uri 1, requestBodyJson=request body json, processingDuration="));
         event = new DiscoveryEvent(DiscoveryEventType.DYNAMICANNOUNCEMENT, true, "remote address 1", "request uri 1", null, Duration.nanosSince(System.nanoTime() - 1000));
-        assertTrue(event.toString().startsWith("DiscoveryEvent{type=DYNAMICANNOUNCEMENT, success=true, remoteAddress=remote address 1, requestUri=request uri 1, requestBodyJson=, processingDuration="));
+        assertTrue(event.toString().startsWith("DiscoveryEvent{type=DYNAMICANNOUNCEMENT, success=true, remoteAddress=remote address 1, requestUri=request uri 1, requestBodyJson=null, processingDuration="));
     }
 }

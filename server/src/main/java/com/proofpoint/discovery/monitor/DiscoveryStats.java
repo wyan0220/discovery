@@ -6,138 +6,145 @@ import org.weakref.jmx.Managed;
 import org.weakref.jmx.Nested;
 
 import java.util.EnumMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import static com.proofpoint.discovery.monitor.DiscoveryEventType.SERVICEQUERY;
+import static com.proofpoint.discovery.monitor.DiscoveryEventType.DYNAMICANNOUNCEMENT;
+import static com.proofpoint.discovery.monitor.DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE;
+import static com.proofpoint.discovery.monitor.DiscoveryEventType.STATICANNOUNCEMENT;
+import static com.proofpoint.discovery.monitor.DiscoveryEventType.STATICANNOUNCEMENTLIST;
+import static com.proofpoint.discovery.monitor.DiscoveryEventType.STATICANNOUNCEMENTDELETE;
 
 public class DiscoveryStats
 {
-    private final EnumMap<DiscoveryEventType, Stats> eventTypeStatsEnumMap;
+    private final Map<DiscoveryEventType, Stats> eventTypeStats;
 
     public DiscoveryStats()
     {
-        eventTypeStatsEnumMap = new EnumMap<DiscoveryEventType, Stats>(DiscoveryEventType.class);
+        eventTypeStats = new EnumMap<DiscoveryEventType, Stats>(DiscoveryEventType.class);
         for (DiscoveryEventType type : DiscoveryEventType.values()) {
-            eventTypeStatsEnumMap.put(type, new Stats());
+            eventTypeStats.put(type, new Stats());
         }
     }
 
     @Managed
     public long getServiceQuerySuccessCount()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.SERVICEQUERY).getSuccessCount();
+        return eventTypeStats.get(SERVICEQUERY).getSuccessCount();
     }
 
     @Managed
     public long getServiceQueryFailureCount()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.SERVICEQUERY).getFailureCount();
+        return eventTypeStats.get(SERVICEQUERY).getFailureCount();
     }
 
     @Managed
     public long getStaticAnnouncementSuccessCount()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.STATICANNOUNCEMENT).getSuccessCount();
+        return eventTypeStats.get(STATICANNOUNCEMENT).getSuccessCount();
     }
 
     @Managed
     public long getStaticAnnouncementFailureCount()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.STATICANNOUNCEMENT).getFailureCount();
+        return eventTypeStats.get(STATICANNOUNCEMENT).getFailureCount();
     }
 
     @Managed
     public long getStaticAnnouncementListSuccessCount()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.STATICANNOUNCEMENTLIST).getSuccessCount();
+        return eventTypeStats.get(STATICANNOUNCEMENTLIST).getSuccessCount();
     }
 
     @Managed
     public long getStaticAnnouncementListFailureCount()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.STATICANNOUNCEMENTLIST).getFailureCount();
+        return eventTypeStats.get(STATICANNOUNCEMENTLIST).getFailureCount();
     }
 
     @Managed
     public long getStaticAnnouncementDeleteSuccessCount()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.STATICANNOUNCEMENTDELETE).getSuccessCount();
+        return eventTypeStats.get(STATICANNOUNCEMENTDELETE).getSuccessCount();
     }
 
     @Managed
     public long getStaticAnnouncementDeleteFailureCount()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.STATICANNOUNCEMENTDELETE).getFailureCount();
+        return eventTypeStats.get(STATICANNOUNCEMENTDELETE).getFailureCount();
     }
 
     @Managed
     public long getDynamicAnnouncementSuccessCount()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.DYNAMICANNOUNCEMENT).getSuccessCount();
+        return eventTypeStats.get(DYNAMICANNOUNCEMENT).getSuccessCount();
     }
 
     @Managed
     public long getDynamicAnnouncementFailureCount()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.DYNAMICANNOUNCEMENT).getFailureCount();
+        return eventTypeStats.get(DYNAMICANNOUNCEMENT).getFailureCount();
     }
 
     @Managed
     public long getDynamicAnnouncementDeleteSuccessCount()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE).getSuccessCount();
+        return eventTypeStats.get(DYNAMICANNOUNCEMENTDELETE).getSuccessCount();
     }
 
     @Managed
     public long getDynamicAnnouncementDeleteFailureCount()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE).getFailureCount();
+        return eventTypeStats.get(DYNAMICANNOUNCEMENTDELETE).getFailureCount();
     }
 
     @Managed
     @Nested
     public TimedStat getServiceQueryProcessingTime()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.SERVICEQUERY).getProcessingTime();
+        return eventTypeStats.get(SERVICEQUERY).getProcessingTime();
     }
 
     @Managed
     @Nested
     public TimedStat getStaticAnnouncementProcessingTime()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.STATICANNOUNCEMENT).getProcessingTime();
+        return eventTypeStats.get(STATICANNOUNCEMENT).getProcessingTime();
     }
 
     @Managed
     @Nested
     public TimedStat getStaticAnnouncementListProcessingTime()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.STATICANNOUNCEMENTLIST).getProcessingTime();
+        return eventTypeStats.get(STATICANNOUNCEMENTLIST).getProcessingTime();
     }
 
     @Managed
     @Nested
     public TimedStat getStaticAnnouncementDeleteProcessingTime()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.STATICANNOUNCEMENTDELETE).getProcessingTime();
+        return eventTypeStats.get(STATICANNOUNCEMENTDELETE).getProcessingTime();
     }
 
     @Managed
     @Nested
     public TimedStat getDynamicAnnouncementProcessingTime()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.DYNAMICANNOUNCEMENT).getProcessingTime();
+        return eventTypeStats.get(DYNAMICANNOUNCEMENT).getProcessingTime();
     }
 
     @Managed
     @Nested
     public TimedStat getDynamicAnnouncementDeleteProcessingTime()
     {
-        return eventTypeStatsEnumMap.get(DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE).getProcessingTime();
+        return eventTypeStats.get(DYNAMICANNOUNCEMENTDELETE).getProcessingTime();
     }
 
     public void addStats(DiscoveryEventType type, boolean success, long startTime)
     {
-        eventTypeStatsEnumMap.get(type).incrementCount(success);
-        eventTypeStatsEnumMap.get(type).addProcessingTime(startTime);
+        eventTypeStats.get(type).incrementCount(success);
+        eventTypeStats.get(type).addProcessingTime(startTime);
     }
 
     private static class Stats

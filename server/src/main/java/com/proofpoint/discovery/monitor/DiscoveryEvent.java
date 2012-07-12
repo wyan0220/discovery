@@ -121,7 +121,7 @@ public class DiscoveryEvent
                 .add("success", success)
                 .add("remoteAddress", remoteAddress)
                 .add("requestUri", requestUri)
-                .add("requestBodyJson", requestBodyJson == null ? "" : requestBodyJson)
+                .add("requestBodyJson", requestBodyJson)
                 .add("processingDuration", processingDuration).toString();
     }
 }
