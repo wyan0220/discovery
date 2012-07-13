@@ -53,62 +53,47 @@ public class ServiceResource
     @GET
     @Path("{type}/{pool}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Services getServices(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("type") String type, @PathParam("pool") String pool)
+    public Services getServices(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("type")final String type, @PathParam("pool") final String pool)
     {
-        boolean success = true;
-        long startTime = System.nanoTime();
-        try {
-            return new Services(node.getEnvironment(), union(dynamicStore.get(type, pool), staticStore.get(type, pool)));
-        }
-        catch (RuntimeException e) {
-            success = false;
-            discoveryMonitor.monitorDiscoveryFailureEvent(DiscoveryEventType.SERVICEQUERY, e, uriInfo.getRequestUri().toString());
-            throw e;
-        }
-        finally {
-            discoveryMonitor.monitorDiscoveryEvent(DiscoveryEventType.SERVICEQUERY, success, httpServletRequest.getRemoteAddr(),
-                    uriInfo.getRequestUri().toString(), "", startTime);
-        }
+        EventMonitorWrapper<Services> eventMonitor = new EventMonitorWrapper<Services>(discoveryMonitor, DiscoveryEventType.SERVICEQUERY, uriInfo, httpServletRequest, "")
+        {
+            @Override
+            public Services doWork()
+            {
+                return new Services(node.getEnvironment(), union(dynamicStore.get(type, pool), staticStore.get(type, pool)));
+            }
+        };
+        return eventMonitor.monitor();
     }
 
     @GET
     @Path("{type}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Services getServices(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("type") String type)
+    public Services getServices(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("type") final String type)
     {
-        boolean success = true;
-        long startTime = System.nanoTime();
-        try {
-            return new Services(node.getEnvironment(), union(dynamicStore.get(type), staticStore.get(type)));
-        }
-        catch (RuntimeException e) {
-            success = false;
-            discoveryMonitor.monitorDiscoveryFailureEvent(DiscoveryEventType.SERVICEQUERY, e, uriInfo.getRequestUri().toString());
-            throw e;
-        }
-        finally {
-            discoveryMonitor.monitorDiscoveryEvent(DiscoveryEventType.SERVICEQUERY, success, httpServletRequest.getRemoteAddr(),
-                    uriInfo.getRequestUri().toString(), "", startTime);
-        }
+        EventMonitorWrapper<Services> eventMonitor = new EventMonitorWrapper<Services>(discoveryMonitor, DiscoveryEventType.SERVICEQUERY, uriInfo, httpServletRequest, "")
+        {
+            @Override
+            public Services doWork()
+            {
+                return new Services(node.getEnvironment(), union(dynamicStore.get(type), staticStore.get(type)));
+            }
+        };
+        return eventMonitor.monitor();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Services getServices(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo)
     {
-        boolean success = true;
-        long startTime = System.nanoTime();
-        try {
-            return new Services(node.getEnvironment(), union(dynamicStore.getAll(), staticStore.getAll()));
-        }
-        catch (RuntimeException e) {
-            success = false;
-            discoveryMonitor.monitorDiscoveryFailureEvent(DiscoveryEventType.SERVICEQUERY, e, uriInfo.getRequestUri().toString());
-            throw e;
-        }
-        finally {
-            discoveryMonitor.monitorDiscoveryEvent(DiscoveryEventType.SERVICEQUERY, success, httpServletRequest.getRemoteAddr(),
-                    uriInfo.getRequestUri().toString(), "", startTime);
-        }
+        EventMonitorWrapper<Services> eventMonitor = new EventMonitorWrapper<Services>(discoveryMonitor, DiscoveryEventType.SERVICEQUERY, uriInfo, httpServletRequest, "")
+        {
+            @Override
+            public Services doWork()
+            {
+                return new Services(node.getEnvironment(), union(dynamicStore.getAll(), staticStore.getAll()));
+            }
+        };
+        return eventMonitor.monitor();
     }
 }

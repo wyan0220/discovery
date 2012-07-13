@@ -56,79 +56,64 @@ public class StaticAnnouncementResource
 
     @POST
     @Consumes("application/json")
-    public Response post(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, StaticAnnouncement announcement)
+    public Response post(@Context HttpServletRequest httpServletRequest, @Context final UriInfo uriInfo, final StaticAnnouncement announcement)
     {
-        boolean success = true;
-        long startTime = System.nanoTime();
-        try {
-            if (!nodeInfo.getEnvironment().equals(announcement.getEnvironment())) {
-                return Response.status(BAD_REQUEST)
-                        .entity(format("Environment mismatch. Expected: %s, Provided: %s", nodeInfo.getEnvironment(), announcement.getEnvironment()))
-                        .build();
-            }
+        EventMonitorWrapper<Response> eventMonitor = new EventMonitorWrapper<Response>(discoveryMonitor, DiscoveryEventType.STATICANNOUNCEMENT, uriInfo, httpServletRequest, announcement.toString())
+        {
+            @Override
+            public Response doWork()
+            {
+                if (!nodeInfo.getEnvironment().equals(announcement.getEnvironment())) {
+                    return Response.status(BAD_REQUEST)
+                            .entity(format("Environment mismatch. Expected: %s, Provided: %s", nodeInfo.getEnvironment(), announcement.getEnvironment()))
+                            .build();
+                }
 
-            Id<Service> id = Id.random();
-            String location = Objects.firstNonNull(announcement.getLocation(), "/somewhere/" + id);
+                Id<Service> id = Id.random();
+                String location = Objects.firstNonNull(announcement.getLocation(), "/somewhere/" + id);
 
-            Service service = Service.copyOf(announcement)
+                Service service = Service.copyOf(announcement)
                         .setId(id)
                         .setLocation(location)
                         .build();
 
-            store.put(service);
+                store.put(service);
 
-            URI uri = UriBuilder.fromUri(uriInfo.getBaseUri()).path(StaticAnnouncementResource.class).path("{id}").build(id);
-            return Response.created(uri).entity(service).build();
-        }
-        catch (RuntimeException e) {
-            success = false;
-            discoveryMonitor.monitorDiscoveryFailureEvent(DiscoveryEventType.STATICANNOUNCEMENT, e, uriInfo.getRequestUri().toString());
-            throw e;
-        }
-        finally {
-            discoveryMonitor.monitorDiscoveryEvent(DiscoveryEventType.STATICANNOUNCEMENT, success, httpServletRequest.getRemoteAddr(),
-                    uriInfo.getRequestUri().toString(), announcement.toString(), startTime);
-        }
+                URI uri = UriBuilder.fromUri(uriInfo.getBaseUri()).path(StaticAnnouncementResource.class).path("{id}").build(id);
+                return Response.created(uri).entity(service).build();
+            }
+        };
+        return eventMonitor.monitor();
     }
 
     @GET
     @Produces("application/json")
     public Services get(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo)
     {
-        boolean success = true;
-        long startTime = System.nanoTime();
-
-        try {
-            return new Services(nodeInfo.getEnvironment(), store.getAll());
-        }
-        catch (RuntimeException e) {
-            success = false;
-            discoveryMonitor.monitorDiscoveryFailureEvent(DiscoveryEventType.STATICANNOUNCEMENTLIST, e, uriInfo.getRequestUri().toString());
-            throw e;
-        }
-        finally {
-            discoveryMonitor.monitorDiscoveryEvent(DiscoveryEventType.STATICANNOUNCEMENTLIST, success, httpServletRequest.getRemoteAddr(),
-                    uriInfo.getRequestUri().toString(), "", startTime);
-        }
+        EventMonitorWrapper<Services> eventMonitor = new EventMonitorWrapper<Services>(discoveryMonitor, DiscoveryEventType.STATICANNOUNCEMENTLIST, uriInfo, httpServletRequest, "")
+        {
+            @Override
+            public Services doWork()
+            {
+                return new Services(nodeInfo.getEnvironment(), store.getAll());
+            }
+        };
+        return eventMonitor.monitor();
     }
 
     @DELETE
     @Path("{id}")
-    public void delete(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("id") Id<Service> id)
+    public void delete(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("id") final Id<Service> id)
     {
-        boolean success = true;
-        long startTime = System.nanoTime();
-        try {
-            store.delete(id);
-        }
-        catch (RuntimeException e) {
-            success = false;
-            discoveryMonitor.monitorDiscoveryFailureEvent(DiscoveryEventType.STATICANNOUNCEMENTDELETE, e, uriInfo.getRequestUri().toString());
-            throw e;
-        }
-        finally {
-            discoveryMonitor.monitorDiscoveryEvent(DiscoveryEventType.STATICANNOUNCEMENTDELETE, success, httpServletRequest.getRemoteAddr(),
-                    uriInfo.getRequestUri().toString(), "", startTime);
-        }
+        EventMonitorWrapper<Void> eventMonitor = new EventMonitorWrapper<Void>(discoveryMonitor, DiscoveryEventType.STATICANNOUNCEMENTDELETE, uriInfo, httpServletRequest, "")
+        {
+            @Override
+            public Void doWork()
+            {
+                store.delete(id);
+                return null;
+            }
+        };
+        eventMonitor.monitor();
     }
 }
