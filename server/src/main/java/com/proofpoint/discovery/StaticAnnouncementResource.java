@@ -58,7 +58,7 @@ public class StaticAnnouncementResource
     @Consumes("application/json")
     public Response post(@Context HttpServletRequest httpServletRequest, @Context final UriInfo uriInfo, final StaticAnnouncement announcement)
     {
-        EventMonitorWrapper<Response> eventMonitor = new EventMonitorWrapper<Response>(discoveryMonitor, DiscoveryEventType.STATICANNOUNCEMENT, uriInfo, httpServletRequest, announcement.toString())
+        EventMonitorProxy<Response> eventMonitor = new EventMonitorProxy<Response>(discoveryMonitor, DiscoveryEventType.STATICANNOUNCEMENT, uriInfo, httpServletRequest, announcement.toString())
         {
             @Override
             public Response doWork()
@@ -83,14 +83,14 @@ public class StaticAnnouncementResource
                 return Response.created(uri).entity(service).build();
             }
         };
-        return eventMonitor.monitor();
+        return eventMonitor.execute();
     }
 
     @GET
     @Produces("application/json")
     public Services get(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo)
     {
-        EventMonitorWrapper<Services> eventMonitor = new EventMonitorWrapper<Services>(discoveryMonitor, DiscoveryEventType.STATICANNOUNCEMENTLIST, uriInfo, httpServletRequest, "")
+        EventMonitorProxy<Services> eventMonitor = new EventMonitorProxy<Services>(discoveryMonitor, DiscoveryEventType.STATICANNOUNCEMENTLIST, uriInfo, httpServletRequest, "")
         {
             @Override
             public Services doWork()
@@ -98,14 +98,14 @@ public class StaticAnnouncementResource
                 return new Services(nodeInfo.getEnvironment(), store.getAll());
             }
         };
-        return eventMonitor.monitor();
+        return eventMonitor.execute();
     }
 
     @DELETE
     @Path("{id}")
     public void delete(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("id") final Id<Service> id)
     {
-        EventMonitorWrapper<Void> eventMonitor = new EventMonitorWrapper<Void>(discoveryMonitor, DiscoveryEventType.STATICANNOUNCEMENTDELETE, uriInfo, httpServletRequest, "")
+        EventMonitorProxy<Void> eventMonitor = new EventMonitorProxy<Void>(discoveryMonitor, DiscoveryEventType.STATICANNOUNCEMENTDELETE, uriInfo, httpServletRequest, "")
         {
             @Override
             public Void doWork()
@@ -114,6 +114,6 @@ public class StaticAnnouncementResource
                 return null;
             }
         };
-        eventMonitor.monitor();
+        eventMonitor.execute();
     }
 }

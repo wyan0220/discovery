@@ -55,7 +55,7 @@ public class ServiceResource
     @Produces(MediaType.APPLICATION_JSON)
     public Services getServices(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("type")final String type, @PathParam("pool") final String pool)
     {
-        EventMonitorWrapper<Services> eventMonitor = new EventMonitorWrapper<Services>(discoveryMonitor, DiscoveryEventType.SERVICEQUERY, uriInfo, httpServletRequest, "")
+        EventMonitorProxy<Services> eventMonitor = new EventMonitorProxy<Services>(discoveryMonitor, DiscoveryEventType.SERVICEQUERY, uriInfo, httpServletRequest, "")
         {
             @Override
             public Services doWork()
@@ -63,7 +63,7 @@ public class ServiceResource
                 return new Services(node.getEnvironment(), union(dynamicStore.get(type, pool), staticStore.get(type, pool)));
             }
         };
-        return eventMonitor.monitor();
+        return eventMonitor.execute();
     }
 
     @GET
@@ -71,7 +71,7 @@ public class ServiceResource
     @Produces(MediaType.APPLICATION_JSON)
     public Services getServices(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("type") final String type)
     {
-        EventMonitorWrapper<Services> eventMonitor = new EventMonitorWrapper<Services>(discoveryMonitor, DiscoveryEventType.SERVICEQUERY, uriInfo, httpServletRequest, "")
+        EventMonitorProxy<Services> eventMonitor = new EventMonitorProxy<Services>(discoveryMonitor, DiscoveryEventType.SERVICEQUERY, uriInfo, httpServletRequest, "")
         {
             @Override
             public Services doWork()
@@ -79,14 +79,14 @@ public class ServiceResource
                 return new Services(node.getEnvironment(), union(dynamicStore.get(type), staticStore.get(type)));
             }
         };
-        return eventMonitor.monitor();
+        return eventMonitor.execute();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Services getServices(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo)
     {
-        EventMonitorWrapper<Services> eventMonitor = new EventMonitorWrapper<Services>(discoveryMonitor, DiscoveryEventType.SERVICEQUERY, uriInfo, httpServletRequest, "")
+        EventMonitorProxy<Services> eventMonitor = new EventMonitorProxy<Services>(discoveryMonitor, DiscoveryEventType.SERVICEQUERY, uriInfo, httpServletRequest, "")
         {
             @Override
             public Services doWork()
@@ -94,6 +94,6 @@ public class ServiceResource
                 return new Services(node.getEnvironment(), union(dynamicStore.getAll(), staticStore.getAll()));
             }
         };
-        return eventMonitor.monitor();
+        return eventMonitor.execute();
     }
 }

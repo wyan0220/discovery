@@ -6,7 +6,7 @@ import com.proofpoint.discovery.monitor.DiscoveryMonitor;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriInfo;
 
-public abstract class EventMonitorWrapper<T>
+public abstract class EventMonitorProxy<T>
 {
     private final DiscoveryMonitor discoveryMonitor;
     private final DiscoveryEventType type;
@@ -14,7 +14,7 @@ public abstract class EventMonitorWrapper<T>
     private final HttpServletRequest httpServletRequest;
     private final String requestBody;
 
-    public EventMonitorWrapper(DiscoveryMonitor discoveryMonitor, DiscoveryEventType type, UriInfo uriInfo, HttpServletRequest httpServletRequest, String requestBody)
+    public EventMonitorProxy(DiscoveryMonitor discoveryMonitor, DiscoveryEventType type, UriInfo uriInfo, HttpServletRequest httpServletRequest, String requestBody)
     {
         this.discoveryMonitor = discoveryMonitor;
         this.type = type;
@@ -23,7 +23,7 @@ public abstract class EventMonitorWrapper<T>
         this.requestBody = requestBody;
     }
 
-    public T monitor()
+    public T execute()
     {
         boolean success = true;
         long startTime = System.nanoTime();

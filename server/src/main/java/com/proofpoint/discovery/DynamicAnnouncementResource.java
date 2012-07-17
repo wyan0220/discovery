@@ -57,7 +57,7 @@ public class DynamicAnnouncementResource
     @Consumes(MediaType.APPLICATION_JSON)
     public Response put(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("node_id")final Id<Node> nodeId, final DynamicAnnouncement announcement)
     {
-        EventMonitorWrapper<Response> eventMonitor = new EventMonitorWrapper<Response>(discoveryMonitor, DiscoveryEventType.DYNAMICANNOUNCEMENT, uriInfo, httpServletRequest, announcement.toString())
+        EventMonitorProxy<Response> eventMonitor = new EventMonitorProxy<Response>(discoveryMonitor, DiscoveryEventType.DYNAMICANNOUNCEMENT, uriInfo, httpServletRequest, announcement.toString())
         {
             @Override
             public Response doWork()
@@ -79,13 +79,13 @@ public class DynamicAnnouncementResource
                 return Response.status(ACCEPTED).build();
             }
         };
-        return eventMonitor.monitor();
+        return eventMonitor.execute();
     }
 
     @DELETE
     public Response delete(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("node_id") final Id<Node> nodeId)
     {
-        EventMonitorWrapper<Response> eventMonitor = new EventMonitorWrapper<Response>(discoveryMonitor, DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE, uriInfo, httpServletRequest, "")
+        EventMonitorProxy<Response> eventMonitor = new EventMonitorProxy<Response>(discoveryMonitor, DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE, uriInfo, httpServletRequest, "")
         {
             @Override
             public Response doWork()
@@ -97,6 +97,6 @@ public class DynamicAnnouncementResource
                 return Response.noContent().build();
             }
         };
-        return eventMonitor.monitor();
+        return eventMonitor.execute();
     }
 }
