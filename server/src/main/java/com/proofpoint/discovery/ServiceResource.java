@@ -15,10 +15,8 @@
  */
 package com.proofpoint.discovery;
 
-import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
-import com.proofpoint.discovery.monitor.DiscoveryEventType;
-import com.proofpoint.discovery.monitor.DiscoveryMonitor;
+import com.proofpoint.discovery.monitor.MonitorWith;
 import com.proofpoint.node.NodeInfo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +29,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import static com.google.common.collect.Sets.union;
+import static com.proofpoint.discovery.monitor.DiscoveryEventType.SERVICEQUERY;
 
 
 @Path("/v1/service")
@@ -39,61 +38,38 @@ public class ServiceResource
     private final DynamicStore dynamicStore;
     private final StaticStore staticStore;
     private final NodeInfo node;
-    private final DiscoveryMonitor discoveryMonitor;
 
     @Inject
-    public ServiceResource(DynamicStore dynamicStore, StaticStore staticStore, NodeInfo node, DiscoveryMonitor discoveryMonitor)
+    public ServiceResource(DynamicStore dynamicStore, StaticStore staticStore, NodeInfo node)
     {
         this.dynamicStore = dynamicStore;
         this.staticStore = staticStore;
         this.node = node;
-        this.discoveryMonitor = Preconditions.checkNotNull(discoveryMonitor);
     }
 
     @GET
     @Path("{type}/{pool}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Services getServices(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("type")final String type, @PathParam("pool") final String pool)
+    @MonitorWith(SERVICEQUERY)
+    public Services getServices(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("type") final String type, @PathParam("pool") final String pool)
     {
-        EventMonitorProxy<Services> eventMonitor = new EventMonitorProxy<Services>(discoveryMonitor, DiscoveryEventType.SERVICEQUERY, uriInfo, httpServletRequest, "")
-        {
-            @Override
-            public Services doWork()
-            {
-                return new Services(node.getEnvironment(), union(dynamicStore.get(type, pool), staticStore.get(type, pool)));
-            }
-        };
-        return eventMonitor.execute();
+        return new Services(node.getEnvironment(), union(dynamicStore.get(type, pool), staticStore.get(type, pool)));
     }
 
     @GET
     @Path("{type}")
     @Produces(MediaType.APPLICATION_JSON)
+    @MonitorWith(SERVICEQUERY)
     public Services getServices(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("type") final String type)
     {
-        EventMonitorProxy<Services> eventMonitor = new EventMonitorProxy<Services>(discoveryMonitor, DiscoveryEventType.SERVICEQUERY, uriInfo, httpServletRequest, "")
-        {
-            @Override
-            public Services doWork()
-            {
-                return new Services(node.getEnvironment(), union(dynamicStore.get(type), staticStore.get(type)));
-            }
-        };
-        return eventMonitor.execute();
+        return new Services(node.getEnvironment(), union(dynamicStore.get(type), staticStore.get(type)));
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @MonitorWith(SERVICEQUERY)
     public Services getServices(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo)
     {
-        EventMonitorProxy<Services> eventMonitor = new EventMonitorProxy<Services>(discoveryMonitor, DiscoveryEventType.SERVICEQUERY, uriInfo, httpServletRequest, "")
-        {
-            @Override
-            public Services doWork()
-            {
-                return new Services(node.getEnvironment(), union(dynamicStore.getAll(), staticStore.getAll()));
-            }
-        };
-        return eventMonitor.execute();
+        return new Services(node.getEnvironment(), union(dynamicStore.getAll(), staticStore.getAll()));
     }
 }

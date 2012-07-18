@@ -20,6 +20,7 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
+import com.google.inject.matcher.Matchers;
 import com.proofpoint.discovery.client.ServiceDescriptor;
 import com.proofpoint.discovery.client.ServiceInventory;
 import com.proofpoint.discovery.client.ServiceSelector;
@@ -27,6 +28,8 @@ import com.proofpoint.discovery.monitor.DiscoveryEvent;
 import com.proofpoint.discovery.monitor.DiscoveryFailureEvent;
 import com.proofpoint.discovery.monitor.DiscoveryMonitor;
 import com.proofpoint.discovery.monitor.DiscoveryStats;
+import com.proofpoint.discovery.monitor.MonitorInterceptor;
+import com.proofpoint.discovery.monitor.MonitorWith;
 import com.proofpoint.discovery.store.InMemoryStore;
 import com.proofpoint.discovery.store.PersistentStore;
 import com.proofpoint.discovery.store.PersistentStoreConfig;
@@ -70,6 +73,11 @@ public class DiscoveryServerModule
         // event
         eventBinder(binder).bindEventClient(DiscoveryEvent.class);
         eventBinder(binder).bindEventClient(DiscoveryFailureEvent.class);
+
+        // interceptor
+        MonitorInterceptor interceptor = new MonitorInterceptor();
+        binder.requestInjection(interceptor);
+        binder.bindInterceptor(Matchers.any(), Matchers.annotatedWith(MonitorWith.class), interceptor);
     }
 
     @Singleton

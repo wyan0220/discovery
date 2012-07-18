@@ -16,9 +16,7 @@
 package com.proofpoint.discovery;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
-import com.proofpoint.discovery.monitor.DiscoveryEventType;
-import com.proofpoint.discovery.monitor.DiscoveryMonitor;
+import com.proofpoint.discovery.monitor.MonitorWith;
 import com.proofpoint.node.NodeInfo;
 
 import javax.inject.Inject;
@@ -33,6 +31,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import static com.proofpoint.discovery.monitor.DiscoveryEventType.DYNAMICANNOUNCEMENT;
+import static com.proofpoint.discovery.monitor.DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE;
 import static java.lang.String.format;
 import static javax.ws.rs.core.Response.Status.ACCEPTED;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
@@ -43,60 +43,44 @@ public class DynamicAnnouncementResource
 {
     private final NodeInfo nodeInfo;
     private final DynamicStore dynamicStore;
-    private final DiscoveryMonitor discoveryMonitor;
 
     @Inject
-    public DynamicAnnouncementResource(DynamicStore dynamicStore, NodeInfo nodeInfo, DiscoveryMonitor discoveryMonitor)
+    public DynamicAnnouncementResource(DynamicStore dynamicStore, NodeInfo nodeInfo)
     {
         this.dynamicStore = dynamicStore;
         this.nodeInfo = nodeInfo;
-        this.discoveryMonitor = Preconditions.checkNotNull(discoveryMonitor);
     }
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response put(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("node_id")final Id<Node> nodeId, final DynamicAnnouncement announcement)
+    @MonitorWith(DYNAMICANNOUNCEMENT)
+    public Response put(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, final DynamicAnnouncement announcement, @PathParam("node_id") final Id<Node> nodeId)
     {
-        EventMonitorProxy<Response> eventMonitor = new EventMonitorProxy<Response>(discoveryMonitor, DiscoveryEventType.DYNAMICANNOUNCEMENT, uriInfo, httpServletRequest, announcement.toString())
-        {
-            @Override
-            public Response doWork()
-            {
-                if (!nodeInfo.getEnvironment().equals(announcement.getEnvironment())) {
-                    return Response.status(BAD_REQUEST)
-                            .entity(format("Environment mismatch. Expected: %s, Provided: %s", nodeInfo.getEnvironment(), announcement.getEnvironment()))
-                            .build();
-                }
+        if (!nodeInfo.getEnvironment().equals(announcement.getEnvironment())) {
+            return Response.status(BAD_REQUEST)
+                    .entity(format("Environment mismatch. Expected: %s, Provided: %s", nodeInfo.getEnvironment(), announcement.getEnvironment()))
+                    .build();
+        }
 
-                String location = Objects.firstNonNull(announcement.getLocation(), "/somewhere/" + nodeId.toString());
+        String location = Objects.firstNonNull(announcement.getLocation(), "/somewhere/" + nodeId.toString());
 
-                DynamicAnnouncement announcementWithLocation = DynamicAnnouncement.copyOf(announcement)
-                        .setLocation(location)
-                        .build();
+        DynamicAnnouncement announcementWithLocation = DynamicAnnouncement.copyOf(announcement)
+                .setLocation(location)
+                .build();
 
-                dynamicStore.put(nodeId, announcementWithLocation);
+        dynamicStore.put(nodeId, announcementWithLocation);
 
-                return Response.status(ACCEPTED).build();
-            }
-        };
-        return eventMonitor.execute();
+        return Response.status(ACCEPTED).build();
     }
 
     @DELETE
+    @MonitorWith(DYNAMICANNOUNCEMENTDELETE)
     public Response delete(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("node_id") final Id<Node> nodeId)
     {
-        EventMonitorProxy<Response> eventMonitor = new EventMonitorProxy<Response>(discoveryMonitor, DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE, uriInfo, httpServletRequest, "")
-        {
-            @Override
-            public Response doWork()
-            {
-                if (!dynamicStore.delete(nodeId)) {
-                    return Response.status(NOT_FOUND).build();
-                }
+        if (!dynamicStore.delete(nodeId)) {
+            return Response.status(NOT_FOUND).build();
+        }
 
-                return Response.noContent().build();
-            }
-        };
-        return eventMonitor.execute();
+        return Response.noContent().build();
     }
 }

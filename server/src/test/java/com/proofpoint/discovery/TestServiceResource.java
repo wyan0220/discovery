@@ -40,8 +40,6 @@ public class TestServiceResource
     private InMemoryDynamicStore dynamicStore;
     private InMemoryStaticStore staticStore;
     private ServiceResource resource;
-    private InMemoryEventClient eventClient;
-    private DiscoveryStats discoveryStats;
     private HttpServletRequest httpServletRequest;
     private final UriInfo uriInfo = MockUriInfo.from("http://localhost:4111/v1/service");
 
@@ -50,13 +48,10 @@ public class TestServiceResource
     {
         dynamicStore = new InMemoryDynamicStore(new DiscoveryConfig(), new TestingTimeProvider());
         staticStore = new InMemoryStaticStore();
-        eventClient = new InMemoryEventClient();
-        discoveryStats = new DiscoveryStats();
         httpServletRequest = Mockito.mock(HttpServletRequest.class);
         when(httpServletRequest.getRemoteAddr()).thenReturn("127.0.0.1");
 
-        resource = new ServiceResource(dynamicStore, staticStore, new NodeInfo("testing"),
-                new DiscoveryMonitor(eventClient, discoveryStats));
+        resource = new ServiceResource(dynamicStore, staticStore, new NodeInfo("testing"));
     }
 
     @Test

@@ -145,7 +145,13 @@ public class TestDiscoveryServer
         client.announce(ImmutableSet.of(announcement)).get();
 
         assertEquals(inMemoryEventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT.name());
+
+        DiscoveryEvent event = (DiscoveryEvent) inMemoryEventClient.getEvents().get(0);
+        assertEquals(event.getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT.name());
+        assertNotNull(event.getRemoteAddress());
+        assertTrue(event.getRequestUri().matches("http://.*/v1/announcement/.*"));
+        assertTrue(event.getRequestBodyJson().matches("DynamicAnnouncement\\{environment=.*, pool=.*, location=.*, services=.*\\}"));
+
         assertEquals(discoveryStats.getDynamicAnnouncementSuccessCount(), 1);
         assertEquals(discoveryStats.getDynamicAnnouncementProcessingTime().getCount(), 1);
 
@@ -162,7 +168,13 @@ public class TestDiscoveryServer
         assertEquals(service.getProperties(), announcement.getProperties());
 
         assertEquals(inMemoryEventClient.getEvents().size(), 2);
-        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(1)).getType(), DiscoveryEventType.SERVICEQUERY.name());
+
+        event = (DiscoveryEvent) inMemoryEventClient.getEvents().get(1);
+        assertEquals(event.getType(), DiscoveryEventType.SERVICEQUERY.name());
+        assertNotNull(event.getRemoteAddress());
+        assertTrue(event.getRequestUri().matches("http://.*/v1/service/apple/red"));
+        assertEquals(event.getRequestBodyJson(), "");
+
         assertEquals(discoveryStats.getServiceQuerySuccessCount(), 1);
         assertEquals(discoveryStats.getServiceQueryProcessingTime().getCount(), 1);
 
@@ -170,13 +182,25 @@ public class TestDiscoveryServer
         client.unannounce().get();
 
         assertEquals(inMemoryEventClient.getEvents().size(), 3);
-        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(2)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE.name());
+
+        event = (DiscoveryEvent) inMemoryEventClient.getEvents().get(2);
+        assertEquals(event.getType(), DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE.name());
+        assertNotNull(event.getRemoteAddress());
+        assertTrue(event.getRequestUri().matches("http://.*/v1/announcement/.*"));
+        assertEquals(event.getRequestBodyJson(), "");
+
         assertEquals(discoveryStats.getDynamicAnnouncementDeleteSuccessCount(), 1);
         assertEquals(discoveryStats.getDynamicAnnouncementDeleteProcessingTime().getCount(), 1);
 
         assertTrue(selectorFor("apple", "red").selectAllServices().isEmpty());
         assertEquals(inMemoryEventClient.getEvents().size(), 4);
-        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(3)).getType(), DiscoveryEventType.SERVICEQUERY.name());
+
+        event = (DiscoveryEvent) inMemoryEventClient.getEvents().get(3);
+        assertEquals(event.getType(), DiscoveryEventType.SERVICEQUERY.name());
+        assertNotNull(event.getRemoteAddress());
+        assertTrue(event.getRequestUri().matches("http://.*/v1/service/apple/red"));
+        assertEquals(event.getRequestBodyJson(), "");
+
         assertEquals(discoveryStats.getServiceQuerySuccessCount(), 2);
         assertEquals(discoveryStats.getServiceQueryProcessingTime().getCount(), 2);
     }
@@ -209,7 +233,13 @@ public class TestDiscoveryServer
                 .toString();
 
         assertEquals(inMemoryEventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENT.name());
+
+        DiscoveryEvent event = (DiscoveryEvent) inMemoryEventClient.getEvents().get(0);
+        assertEquals(event.getType(), DiscoveryEventType.STATICANNOUNCEMENT.name());
+        assertNotNull(event.getRemoteAddress());
+        assertTrue(event.getRequestUri().matches("http://.*/v1/announcement/static"));
+        assertTrue(event.getRequestBodyJson().matches("StaticAnnouncement\\{environment=.*, pool=.*, location=.*, type=.*, properties=\\{.*\\}"));
+
         assertEquals(discoveryStats.getStaticAnnouncementSuccessCount(), 1);
         assertEquals(discoveryStats.getStaticAnnouncementProcessingTime().getCount(), 1);
 
@@ -217,7 +247,13 @@ public class TestDiscoveryServer
         assertEquals(services.size(), 1);
 
         assertEquals(inMemoryEventClient.getEvents().size(), 2);
-        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(1)).getType(), DiscoveryEventType.SERVICEQUERY.name());
+
+        event = (DiscoveryEvent) inMemoryEventClient.getEvents().get(1);
+        assertEquals(event.getType(), DiscoveryEventType.SERVICEQUERY.name());
+        assertNotNull(event.getRemoteAddress());
+        assertTrue(event.getRequestUri().matches("http://.*/v1/service/apple/red"));
+        assertEquals(event.getRequestBodyJson(), "");
+
         assertEquals(discoveryStats.getServiceQuerySuccessCount(), 1);
         assertEquals(discoveryStats.getServiceQueryProcessingTime().getCount(), 1);
 
@@ -236,6 +272,13 @@ public class TestDiscoveryServer
         assertEquals(response.getStatusCode(), Status.NO_CONTENT.getStatusCode());
 
         assertEquals(inMemoryEventClient.getEvents().size(), 3);
+
+        event = (DiscoveryEvent) inMemoryEventClient.getEvents().get(2);
+        assertEquals(event.getType(), DiscoveryEventType.STATICANNOUNCEMENTDELETE.name());
+        assertNotNull(event.getRemoteAddress());
+        assertTrue(event.getRequestUri().matches("http://.*/v1/announcement/static/.*"));
+        assertEquals(event.getRequestBodyJson(), "");
+
         assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(2)).getType(), DiscoveryEventType.STATICANNOUNCEMENTDELETE.name());
         assertEquals(discoveryStats.getStaticAnnouncementDeleteSuccessCount(), 1);
         assertEquals(discoveryStats.getStaticAnnouncementDeleteProcessingTime().getCount(), 1);
@@ -243,7 +286,13 @@ public class TestDiscoveryServer
         // ensure announcement is gone
         assertTrue(selectorFor("apple", "red").selectAllServices().isEmpty());
         assertEquals(inMemoryEventClient.getEvents().size(), 4);
-        assertEquals(((DiscoveryEvent) inMemoryEventClient.getEvents().get(3)).getType(), DiscoveryEventType.SERVICEQUERY.name());
+
+        event = (DiscoveryEvent) inMemoryEventClient.getEvents().get(3);
+        assertEquals(event.getType(), DiscoveryEventType.SERVICEQUERY.name());
+        assertNotNull(event.getRemoteAddress());
+        assertTrue(event.getRequestUri().matches("http://.*/v1/service/apple/red"));
+        assertEquals(event.getRequestBodyJson(), "");
+
         assertEquals(discoveryStats.getServiceQuerySuccessCount(), 2);
         assertEquals(discoveryStats.getServiceQueryProcessingTime().getCount(), 2);
     }

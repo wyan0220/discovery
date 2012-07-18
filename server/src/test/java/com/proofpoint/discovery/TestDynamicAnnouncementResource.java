@@ -45,20 +45,16 @@ public class TestDynamicAnnouncementResource
 {
     private InMemoryDynamicStore store;
     private DynamicAnnouncementResource resource;
-    private InMemoryEventClient eventClient;
-    private DiscoveryStats discoveryStats;
     private HttpServletRequest httpServletRequest;
     private final UriInfo uriInfo = MockUriInfo.from("http://localhost:8080/v1/announcement/");
 
     @BeforeMethod
     public void setup()
     {
-        eventClient = new InMemoryEventClient();
-        discoveryStats = new DiscoveryStats();
         httpServletRequest = Mockito.mock(HttpServletRequest.class);
         when(httpServletRequest.getRemoteAddr()).thenReturn("127.0.0.1");
         store = new InMemoryDynamicStore(new DiscoveryConfig(), new RealTimeProvider());
-        resource = new DynamicAnnouncementResource(store, new NodeInfo("testing"), new DiscoveryMonitor(eventClient, discoveryStats));
+        resource = new DynamicAnnouncementResource(store, new NodeInfo("testing"));
     }
 
     @Test
@@ -69,17 +65,12 @@ public class TestDynamicAnnouncementResource
         );
 
         Id<Node> nodeId = Id.random();
-        Response response = resource.put(httpServletRequest, uriInfo, nodeId, announcement);
+        Response response = resource.put(httpServletRequest, uriInfo, announcement, nodeId);
 
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.ACCEPTED.getStatusCode());
 
         assertEqualsIgnoreOrder(store.getAll(), transform(announcement.getServiceAnnouncements(), toServiceWith(nodeId, announcement.getLocation(), announcement.getPool())));
-
-        assertEquals(discoveryStats.getDynamicAnnouncementSuccessCount(), 1);
-        assertEquals(discoveryStats.getDynamicAnnouncementFailureCount(), 0);
-        assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT.name());
     }
 
     @Test
@@ -96,17 +87,12 @@ public class TestDynamicAnnouncementResource
                 new DynamicServiceAnnouncement(Id.<Service>random(), "storage", ImmutableMap.of("key", "new")))
         );
 
-        Response response = resource.put(httpServletRequest, uriInfo, nodeId, announcement);
+        Response response = resource.put(httpServletRequest, uriInfo, announcement, nodeId);
 
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.ACCEPTED.getStatusCode());
 
         assertEqualsIgnoreOrder(store.getAll(), transform(announcement.getServiceAnnouncements(), toServiceWith(nodeId, announcement.getLocation(), announcement.getPool())));
-
-        assertEquals(discoveryStats.getDynamicAnnouncementSuccessCount(), 1);
-        assertEquals(discoveryStats.getDynamicAnnouncementFailureCount(), 0);
-        assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT.name());
     }
 
     @Test
@@ -117,17 +103,12 @@ public class TestDynamicAnnouncementResource
         );
 
         Id<Node> nodeId = Id.random();
-        Response response = resource.put(httpServletRequest, uriInfo, nodeId, announcement);
+        Response response = resource.put(httpServletRequest, uriInfo, announcement, nodeId);
 
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
 
         assertTrue(store.getAll().isEmpty());
-
-        assertEquals(discoveryStats.getDynamicAnnouncementSuccessCount(), 1);
-        assertEquals(discoveryStats.getDynamicAnnouncementFailureCount(), 0);
-        assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT.name());
     }
 
     @Test
@@ -152,11 +133,6 @@ public class TestDynamicAnnouncementResource
         assertEquals(response.getStatus(), Response.Status.NO_CONTENT.getStatusCode());
 
         assertEqualsIgnoreOrder(store.getAll(), transform(red.getServiceAnnouncements(), toServiceWith(redNodeId, red.getLocation(), red.getPool())));
-
-        assertEquals(discoveryStats.getDynamicAnnouncementDeleteSuccessCount(), 1);
-        assertEquals(discoveryStats.getDynamicAnnouncementDeleteFailureCount(), 0);
-        assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE.name());
     }
 
     @Test
@@ -168,11 +144,6 @@ public class TestDynamicAnnouncementResource
         assertEquals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode());
 
         assertTrue(store.getAll().isEmpty());
-
-        assertEquals(discoveryStats.getDynamicAnnouncementDeleteSuccessCount(), 1);
-        assertEquals(discoveryStats.getDynamicAnnouncementDeleteFailureCount(), 0);
-        assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE.name());
     }
 
     @Test
@@ -183,7 +154,7 @@ public class TestDynamicAnnouncementResource
         );
 
         Id<Node> nodeId = Id.random();
-        Response response = resource.put(httpServletRequest, uriInfo, nodeId, announcement);
+        Response response = resource.put(httpServletRequest, uriInfo, announcement, nodeId);
 
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.ACCEPTED.getStatusCode());
@@ -192,10 +163,5 @@ public class TestDynamicAnnouncementResource
         Service service = store.getAll().iterator().next();
         assertEquals(service.getId(), service.getId());
         assertNotNull(service.getLocation());
-
-        assertEquals(discoveryStats.getDynamicAnnouncementSuccessCount(), 1);
-        assertEquals(discoveryStats.getDynamicAnnouncementFailureCount(), 0);
-        assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent) eventClient.getEvents().get(0)).getType(), DiscoveryEventType.DYNAMICANNOUNCEMENT.name());
     }
 }

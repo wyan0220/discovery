@@ -16,9 +16,7 @@
 package com.proofpoint.discovery;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
-import com.proofpoint.discovery.monitor.DiscoveryEventType;
-import com.proofpoint.discovery.monitor.DiscoveryMonitor;
+import com.proofpoint.discovery.monitor.MonitorWith;
 import com.proofpoint.node.NodeInfo;
 
 import javax.inject.Inject;
@@ -36,6 +34,9 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 
+import static com.proofpoint.discovery.monitor.DiscoveryEventType.STATICANNOUNCEMENT;
+import static com.proofpoint.discovery.monitor.DiscoveryEventType.STATICANNOUNCEMENTDELETE;
+import static com.proofpoint.discovery.monitor.DiscoveryEventType.STATICANNOUNCEMENTLIST;
 import static java.lang.String.format;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
@@ -44,76 +45,53 @@ public class StaticAnnouncementResource
 {
     private final StaticStore store;
     private final NodeInfo nodeInfo;
-    private final DiscoveryMonitor discoveryMonitor;
 
     @Inject
-    public StaticAnnouncementResource(StaticStore store, NodeInfo nodeInfo, DiscoveryMonitor discoveryMonitor)
+    public StaticAnnouncementResource(StaticStore store, NodeInfo nodeInfo)
     {
         this.store = store;
         this.nodeInfo = nodeInfo;
-        this.discoveryMonitor = Preconditions.checkNotNull(discoveryMonitor);
     }
 
     @POST
     @Consumes("application/json")
+    @MonitorWith(STATICANNOUNCEMENT)
     public Response post(@Context HttpServletRequest httpServletRequest, @Context final UriInfo uriInfo, final StaticAnnouncement announcement)
     {
-        EventMonitorProxy<Response> eventMonitor = new EventMonitorProxy<Response>(discoveryMonitor, DiscoveryEventType.STATICANNOUNCEMENT, uriInfo, httpServletRequest, announcement.toString())
-        {
-            @Override
-            public Response doWork()
-            {
-                if (!nodeInfo.getEnvironment().equals(announcement.getEnvironment())) {
-                    return Response.status(BAD_REQUEST)
-                            .entity(format("Environment mismatch. Expected: %s, Provided: %s", nodeInfo.getEnvironment(), announcement.getEnvironment()))
-                            .build();
-                }
+        if (!nodeInfo.getEnvironment().equals(announcement.getEnvironment())) {
+            return Response.status(BAD_REQUEST)
+                    .entity(format("Environment mismatch. Expected: %s, Provided: %s", nodeInfo.getEnvironment(), announcement.getEnvironment()))
+                    .build();
+        }
 
-                Id<Service> id = Id.random();
-                String location = Objects.firstNonNull(announcement.getLocation(), "/somewhere/" + id);
+        Id<Service> id = Id.random();
+        String location = Objects.firstNonNull(announcement.getLocation(), "/somewhere/" + id);
 
-                Service service = Service.copyOf(announcement)
-                        .setId(id)
-                        .setLocation(location)
-                        .build();
+        Service service = Service.copyOf(announcement)
+                .setId(id)
+                .setLocation(location)
+                .build();
 
-                store.put(service);
+        store.put(service);
 
-                URI uri = UriBuilder.fromUri(uriInfo.getBaseUri()).path(StaticAnnouncementResource.class).path("{id}").build(id);
-                return Response.created(uri).entity(service).build();
-            }
-        };
-        return eventMonitor.execute();
+        URI uri = UriBuilder.fromUri(uriInfo.getBaseUri()).path(StaticAnnouncementResource.class).path("{id}").build(id);
+        return Response.created(uri).entity(service).build();
     }
 
     @GET
     @Produces("application/json")
+    @MonitorWith(STATICANNOUNCEMENTLIST)
     public Services get(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo)
     {
-        EventMonitorProxy<Services> eventMonitor = new EventMonitorProxy<Services>(discoveryMonitor, DiscoveryEventType.STATICANNOUNCEMENTLIST, uriInfo, httpServletRequest, "")
-        {
-            @Override
-            public Services doWork()
-            {
-                return new Services(nodeInfo.getEnvironment(), store.getAll());
-            }
-        };
-        return eventMonitor.execute();
+        return new Services(nodeInfo.getEnvironment(), store.getAll());
     }
 
     @DELETE
     @Path("{id}")
+    @MonitorWith(STATICANNOUNCEMENTDELETE)
     public void delete(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("id") final Id<Service> id)
     {
-        EventMonitorProxy<Void> eventMonitor = new EventMonitorProxy<Void>(discoveryMonitor, DiscoveryEventType.STATICANNOUNCEMENTDELETE, uriInfo, httpServletRequest, "")
-        {
-            @Override
-            public Void doWork()
-            {
-                store.delete(id);
-                return null;
-            }
-        };
-        eventMonitor.execute();
+        store.delete(id);
     }
+
 }

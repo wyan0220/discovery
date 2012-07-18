@@ -42,8 +42,6 @@ public class TestStaticAnnouncementResource
 {
     private InMemoryStaticStore store;
     private StaticAnnouncementResource resource;
-    private InMemoryEventClient eventClient;
-    private DiscoveryStats discoveryStats;
     private HttpServletRequest httpServletRequest;
     private final UriInfo uriInfo = MockUriInfo.from("http://localhost:4111/v1/announcement/static");
 
@@ -51,11 +49,9 @@ public class TestStaticAnnouncementResource
     public void setup()
     {
         store = new InMemoryStaticStore();
-        eventClient = new InMemoryEventClient();
-        discoveryStats = new DiscoveryStats();
         httpServletRequest = Mockito.mock(HttpServletRequest.class);
         when(httpServletRequest.getRemoteAddr()).thenReturn("127.0.0.1");
-        resource = new StaticAnnouncementResource(store, new NodeInfo("testing"), new DiscoveryMonitor(eventClient, discoveryStats));
+        resource = new StaticAnnouncementResource(store, new NodeInfo("testing"));
     }
 
     @Test
@@ -77,11 +73,6 @@ public class TestStaticAnnouncementResource
         assertEquals(service.getType(), announcement.getType());
         assertEquals(service.getPool(), announcement.getPool());
         assertEquals(service.getProperties(), announcement.getProperties());
-
-        assertEquals(discoveryStats.getStaticAnnouncementSuccessCount(), 1);
-        assertEquals(discoveryStats.getStaticAnnouncementFailureCount(), 0);
-        assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent)eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENT.name());
     }
 
     @Test
@@ -95,11 +86,6 @@ public class TestStaticAnnouncementResource
         assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
 
         assertTrue(store.getAll().isEmpty());
-
-        assertEquals(discoveryStats.getStaticAnnouncementSuccessCount(), 1);
-        assertEquals(discoveryStats.getStaticAnnouncementFailureCount(), 0);
-        assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent)eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENT.name());
     }
 
     @Test
@@ -113,11 +99,6 @@ public class TestStaticAnnouncementResource
 
         resource.delete(httpServletRequest, uriInfo, blue.getId());
         assertEquals(store.getAll(), ImmutableSet.of(red));
-
-        assertEquals(discoveryStats.getStaticAnnouncementDeleteSuccessCount(), 1);
-        assertEquals(discoveryStats.getStaticAnnouncementDeleteFailureCount(), 0);
-        assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent)eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENTDELETE.name());
     }
 
     @Test
@@ -134,11 +115,6 @@ public class TestStaticAnnouncementResource
         Service service = store.getAll().iterator().next();
         assertEquals(service.getId(), service.getId());
         assertNotNull(service.getLocation());
-
-        assertEquals(discoveryStats.getStaticAnnouncementSuccessCount(), 1);
-        assertEquals(discoveryStats.getStaticAnnouncementFailureCount(), 0);
-        assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent)eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENT.name());
     }
 
     @Test
@@ -154,10 +130,5 @@ public class TestStaticAnnouncementResource
         Services expected = new Services("testing", ImmutableSet.of(red, blue));
 
         assertEquals(actual, expected);
-
-        assertEquals(discoveryStats.getStaticAnnouncementListSuccessCount(), 1);
-        assertEquals(discoveryStats.getStaticAnnouncementListFailureCount(), 0);
-        assertEquals(eventClient.getEvents().size(), 1);
-        assertEquals(((DiscoveryEvent)eventClient.getEvents().get(0)).getType(), DiscoveryEventType.STATICANNOUNCEMENTLIST.name());
     }
 }
