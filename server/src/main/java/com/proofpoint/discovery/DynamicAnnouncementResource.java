@@ -16,20 +16,19 @@
 package com.proofpoint.discovery;
 
 import com.google.common.base.Objects;
-import com.proofpoint.discovery.monitor.MonitorWith;
+import com.proofpoint.discovery.monitor.DiscoveryMonitorResourceFilter;
+import com.proofpoint.discovery.monitor.ForMonitor;
 import com.proofpoint.node.NodeInfo;
+import com.sun.jersey.spi.container.ResourceFilters;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import static com.proofpoint.discovery.monitor.DiscoveryEventType.DYNAMICANNOUNCEMENT;
 import static com.proofpoint.discovery.monitor.DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE;
@@ -39,6 +38,7 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 @Path("/v1/announcement/{node_id}")
+@ResourceFilters(DiscoveryMonitorResourceFilter.class)
 public class DynamicAnnouncementResource
 {
     private final NodeInfo nodeInfo;
@@ -53,8 +53,8 @@ public class DynamicAnnouncementResource
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @MonitorWith(DYNAMICANNOUNCEMENT)
-    public Response put(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, final DynamicAnnouncement announcement, @PathParam("node_id") final Id<Node> nodeId)
+    @ForMonitor(type = DYNAMICANNOUNCEMENT, successCodes = {202})
+    public Response put(DynamicAnnouncement announcement, @PathParam("node_id") final Id<Node> nodeId)
     {
         if (!nodeInfo.getEnvironment().equals(announcement.getEnvironment())) {
             return Response.status(BAD_REQUEST)
@@ -74,8 +74,8 @@ public class DynamicAnnouncementResource
     }
 
     @DELETE
-    @MonitorWith(DYNAMICANNOUNCEMENTDELETE)
-    public Response delete(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("node_id") final Id<Node> nodeId)
+    @ForMonitor(type = DYNAMICANNOUNCEMENTDELETE, successCodes = {204})
+    public Response delete(@PathParam("node_id") final Id<Node> nodeId)
     {
         if (!dynamicStore.delete(nodeId)) {
             return Response.status(NOT_FOUND).build();

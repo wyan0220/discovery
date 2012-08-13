@@ -20,23 +20,15 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
-import com.google.inject.matcher.Matchers;
 import com.proofpoint.discovery.client.ServiceDescriptor;
 import com.proofpoint.discovery.client.ServiceInventory;
 import com.proofpoint.discovery.client.ServiceSelector;
-import com.proofpoint.discovery.monitor.DiscoveryEvent;
-import com.proofpoint.discovery.monitor.DiscoveryFailureEvent;
-import com.proofpoint.discovery.monitor.DiscoveryMonitor;
-import com.proofpoint.discovery.monitor.DiscoveryStats;
-import com.proofpoint.discovery.monitor.MonitorInterceptor;
-import com.proofpoint.discovery.monitor.MonitorWith;
 import com.proofpoint.discovery.store.InMemoryStore;
 import com.proofpoint.discovery.store.PersistentStore;
 import com.proofpoint.discovery.store.PersistentStoreConfig;
 import com.proofpoint.discovery.store.ReplicatedStoreModule;
 import com.proofpoint.node.NodeInfo;
 import org.weakref.jmx.MBeanExporter;
-import org.weakref.jmx.guice.MBeanModule;
 
 import javax.inject.Singleton;
 import javax.management.MBeanServer;
@@ -44,7 +36,6 @@ import java.util.List;
 
 import static com.proofpoint.configuration.ConfigurationModule.bindConfig;
 import static com.proofpoint.discovery.client.DiscoveryBinder.discoveryBinder;
-import static com.proofpoint.event.client.EventBinder.eventBinder;
 
 public class DiscoveryServerModule
         implements Module
@@ -55,9 +46,6 @@ public class DiscoveryServerModule
         binder.bind(ServiceResource.class).in(Scopes.SINGLETON);
 
         discoveryBinder(binder).bindHttpAnnouncement("discovery");
-        binder.bind(DiscoveryMonitor.class).in(Scopes.SINGLETON);
-        binder.bind(DiscoveryStats.class).in(Scopes.SINGLETON);
-        MBeanModule.newExporter(binder).export(DiscoveryStats.class).withGeneratedName();
 
         // dynamic announcements
         binder.bind(DynamicAnnouncementResource.class).in(Scopes.SINGLETON);
@@ -69,15 +57,6 @@ public class DiscoveryServerModule
         binder.bind(StaticStore.class).to(ReplicatedStaticStore.class).in(Scopes.SINGLETON);
         binder.install(new ReplicatedStoreModule("static", ForStaticStore.class, PersistentStore.class));
         bindConfig(binder).prefixedWith("static").to(PersistentStoreConfig.class);
-
-        // event
-        eventBinder(binder).bindEventClient(DiscoveryEvent.class);
-        eventBinder(binder).bindEventClient(DiscoveryFailureEvent.class);
-
-        // interceptor
-        MonitorInterceptor interceptor = new MonitorInterceptor();
-        binder.requestInjection(interceptor);
-        binder.bindInterceptor(Matchers.any(), Matchers.annotatedWith(MonitorWith.class), interceptor);
     }
 
     @Singleton

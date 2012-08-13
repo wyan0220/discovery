@@ -16,23 +16,23 @@
 package com.proofpoint.discovery;
 
 import com.google.inject.Inject;
-import com.proofpoint.discovery.monitor.MonitorWith;
+import com.proofpoint.discovery.monitor.DiscoveryMonitorResourceFilter;
+import com.proofpoint.discovery.monitor.ForMonitor;
 import com.proofpoint.node.NodeInfo;
+import com.sun.jersey.spi.container.ResourceFilters;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 import static com.google.common.collect.Sets.union;
 import static com.proofpoint.discovery.monitor.DiscoveryEventType.SERVICEQUERY;
 
 
 @Path("/v1/service")
+@ResourceFilters(DiscoveryMonitorResourceFilter.class)
 public class ServiceResource
 {
     private final DynamicStore dynamicStore;
@@ -50,8 +50,8 @@ public class ServiceResource
     @GET
     @Path("{type}/{pool}")
     @Produces(MediaType.APPLICATION_JSON)
-    @MonitorWith(SERVICEQUERY)
-    public Services getServices(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("type") final String type, @PathParam("pool") final String pool)
+    @ForMonitor(type = SERVICEQUERY, successCodes = {200, 202})
+    public Services getServices(@PathParam("type") final String type, @PathParam("pool") final String pool)
     {
         return new Services(node.getEnvironment(), union(dynamicStore.get(type, pool), staticStore.get(type, pool)));
     }
@@ -59,16 +59,16 @@ public class ServiceResource
     @GET
     @Path("{type}")
     @Produces(MediaType.APPLICATION_JSON)
-    @MonitorWith(SERVICEQUERY)
-    public Services getServices(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("type") final String type)
+    @ForMonitor(type = SERVICEQUERY, successCodes = {200, 202})
+    public Services getServices(@PathParam("type") final String type)
     {
         return new Services(node.getEnvironment(), union(dynamicStore.get(type), staticStore.get(type)));
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @MonitorWith(SERVICEQUERY)
-    public Services getServices(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo)
+    @ForMonitor(type = SERVICEQUERY, successCodes = {200, 202})
+    public Services getServices()
     {
         return new Services(node.getEnvironment(), union(dynamicStore.getAll(), staticStore.getAll()));
     }

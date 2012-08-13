@@ -42,15 +42,12 @@ public class TestStaticAnnouncementResource
 {
     private InMemoryStaticStore store;
     private StaticAnnouncementResource resource;
-    private HttpServletRequest httpServletRequest;
     private final UriInfo uriInfo = MockUriInfo.from("http://localhost:4111/v1/announcement/static");
 
     @BeforeMethod
     public void setup()
     {
         store = new InMemoryStaticStore();
-        httpServletRequest = Mockito.mock(HttpServletRequest.class);
-        when(httpServletRequest.getRemoteAddr()).thenReturn("127.0.0.1");
         resource = new StaticAnnouncementResource(store, new NodeInfo("testing"));
     }
 
@@ -59,7 +56,7 @@ public class TestStaticAnnouncementResource
     {
         StaticAnnouncement announcement = new StaticAnnouncement("testing", "storage", "alpha", "/a/b", ImmutableMap.of("http", "http://localhost:1111"));
 
-        Response response = resource.post(httpServletRequest, uriInfo, announcement);
+        Response response = resource.post(uriInfo, announcement);
 
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.CREATED.getStatusCode());
@@ -80,7 +77,7 @@ public class TestStaticAnnouncementResource
     {
         StaticAnnouncement announcement = new StaticAnnouncement("production", "storage", "alpha", "/a/b/c", ImmutableMap.of("http", "http://localhost:1111"));
 
-        Response response = resource.post(httpServletRequest, uriInfo, announcement);
+        Response response = resource.post(uriInfo, announcement);
 
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
@@ -97,7 +94,7 @@ public class TestStaticAnnouncementResource
         store.put(red);
         store.put(blue);
 
-        resource.delete(httpServletRequest, uriInfo, blue.getId());
+        resource.delete(blue.getId());
         assertEquals(store.getAll(), ImmutableSet.of(red));
     }
 
@@ -106,7 +103,7 @@ public class TestStaticAnnouncementResource
     {
         StaticAnnouncement announcement = new StaticAnnouncement("testing", "storage", "alpha", null, ImmutableMap.of("http", "http://localhost:1111"));
 
-        Response response = resource.post(httpServletRequest, uriInfo, announcement);
+        Response response = resource.post(uriInfo, announcement);
 
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.CREATED.getStatusCode());
@@ -126,7 +123,7 @@ public class TestStaticAnnouncementResource
         store.put(red);
         store.put(blue);
 
-        Services actual = resource.get(httpServletRequest, uriInfo);
+        Services actual = resource.get();
         Services expected = new Services("testing", ImmutableSet.of(red, blue));
 
         assertEquals(actual, expected);

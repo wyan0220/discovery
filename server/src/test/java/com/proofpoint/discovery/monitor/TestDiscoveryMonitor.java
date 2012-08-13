@@ -27,7 +27,7 @@ public class TestDiscoveryMonitor
     @Test
     public void testMonitorServiceQueryEvent()
     {
-        monitor.monitorDiscoveryEvent(DiscoveryEventType.SERVICEQUERY, true, remoteAddress, requestUri, "", startTime);
+        monitor.monitorDiscoveryEvent(DiscoveryEventType.SERVICEQUERY, true, remoteAddress, requestUri, startTime);
         assertEquals(stats.getServiceQuerySuccessCount(), 1);
         assertEquals(stats.getServiceQueryProcessingTime().getCount(), 1);
         assertEquals(eventClient.getEvents().size(), 1);
@@ -37,7 +37,7 @@ public class TestDiscoveryMonitor
     @Test
     public void testMonitorStaticAnnouncementEvent()
     {
-        monitor.monitorDiscoveryEvent(DiscoveryEventType.STATICANNOUNCEMENT, false, remoteAddress, requestUri, "", startTime);
+        monitor.monitorDiscoveryEvent(DiscoveryEventType.STATICANNOUNCEMENT, false, remoteAddress, requestUri, startTime);
         assertEquals(stats.getStaticAnnouncementFailureCount(), 1);
         assertEquals(stats.getStaticAnnouncementProcessingTime().getCount(), 1);
         assertEquals(eventClient.getEvents().size(), 1);
@@ -47,7 +47,7 @@ public class TestDiscoveryMonitor
     @Test
     public void testMonitorStaticAnnouncementListEvent()
     {
-        monitor.monitorDiscoveryEvent(DiscoveryEventType.STATICANNOUNCEMENTLIST, false, remoteAddress, requestUri, "", startTime);
+        monitor.monitorDiscoveryEvent(DiscoveryEventType.STATICANNOUNCEMENTLIST, false, remoteAddress, requestUri, startTime);
         assertEquals(stats.getStaticAnnouncementListFailureCount(), 1);
         assertEquals(stats.getStaticAnnouncementListProcessingTime().getCount(), 1);
         assertEquals(eventClient.getEvents().size(), 1);
@@ -57,7 +57,7 @@ public class TestDiscoveryMonitor
     @Test
     public void testMonitorStaticAnnouncementDeleteEvent()
     {
-        monitor.monitorDiscoveryEvent(DiscoveryEventType.STATICANNOUNCEMENTDELETE, true, remoteAddress, requestUri, "", startTime);
+        monitor.monitorDiscoveryEvent(DiscoveryEventType.STATICANNOUNCEMENTDELETE, true, remoteAddress, requestUri, startTime);
         assertEquals(stats.getStaticAnnouncementDeleteSuccessCount(), 1);
         assertEquals(stats.getStaticAnnouncementDeleteProcessingTime().getCount(), 1);
         assertEquals(eventClient.getEvents().size(), 1);
@@ -67,7 +67,7 @@ public class TestDiscoveryMonitor
     @Test
     public void testMonitorDynamicAnnouncementEvent()
     {
-        monitor.monitorDiscoveryEvent(DiscoveryEventType.DYNAMICANNOUNCEMENT, false, remoteAddress, requestUri, "", startTime);
+        monitor.monitorDiscoveryEvent(DiscoveryEventType.DYNAMICANNOUNCEMENT, false, remoteAddress, requestUri, startTime);
         assertEquals(stats.getDynamicAnnouncementFailureCount(), 1);
         assertEquals(stats.getDynamicAnnouncementProcessingTime().getCount(), 1);
         assertEquals(eventClient.getEvents().size(), 1);
@@ -77,7 +77,7 @@ public class TestDiscoveryMonitor
     @Test
     public void testMonitorDynamicAnnouncementDeleteEvent()
     {
-        monitor.monitorDiscoveryEvent(DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE, true, remoteAddress, requestUri, "", startTime);
+        monitor.monitorDiscoveryEvent(DiscoveryEventType.DYNAMICANNOUNCEMENTDELETE, true, remoteAddress, requestUri, startTime);
         assertEquals(stats.getDynamicAnnouncementDeleteSuccessCount(), 1);
         assertEquals(stats.getDynamicAnnouncementDeleteProcessingTime().getCount(), 1);
         assertEquals(eventClient.getEvents().size(), 1);

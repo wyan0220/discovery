@@ -54,7 +54,7 @@ public class TestServiceResource
         resource = new ServiceResource(dynamicStore, staticStore, new NodeInfo("testing"));
     }
 
-    @Test
+/*    @Test
     public void testGetByType()
     {
         Id<Node> redNodeId = Id.random();
@@ -140,4 +140,5 @@ public class TestServiceResource
                 toServiceWith(greenNodeId, green.getLocation(), green.getPool()).apply(greenStorage),
                 toServiceWith(blueNodeId, blue.getLocation(), blue.getPool()).apply(blueStorage))));
     }
+    */
 }

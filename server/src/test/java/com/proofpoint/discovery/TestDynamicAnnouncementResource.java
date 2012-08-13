@@ -17,26 +17,16 @@ package com.proofpoint.discovery;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.proofpoint.discovery.monitor.DiscoveryEvent;
-import com.proofpoint.discovery.monitor.DiscoveryEventType;
-import com.proofpoint.discovery.monitor.DiscoveryMonitor;
-import com.proofpoint.discovery.monitor.DiscoveryStats;
 import com.proofpoint.discovery.store.RealTimeProvider;
-import com.proofpoint.event.client.InMemoryEventClient;
-import com.proofpoint.jaxrs.testing.MockUriInfo;
 import com.proofpoint.node.NodeInfo;
-import org.mockito.Mockito;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import static com.google.common.collect.Iterables.transform;
 import static com.proofpoint.discovery.DynamicServiceAnnouncement.toServiceWith;
 import static com.proofpoint.testing.Assertions.assertEqualsIgnoreOrder;
-import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -45,14 +35,10 @@ public class TestDynamicAnnouncementResource
 {
     private InMemoryDynamicStore store;
     private DynamicAnnouncementResource resource;
-    private HttpServletRequest httpServletRequest;
-    private final UriInfo uriInfo = MockUriInfo.from("http://localhost:8080/v1/announcement/");
 
     @BeforeMethod
     public void setup()
     {
-        httpServletRequest = Mockito.mock(HttpServletRequest.class);
-        when(httpServletRequest.getRemoteAddr()).thenReturn("127.0.0.1");
         store = new InMemoryDynamicStore(new DiscoveryConfig(), new RealTimeProvider());
         resource = new DynamicAnnouncementResource(store, new NodeInfo("testing"));
     }
@@ -65,7 +51,7 @@ public class TestDynamicAnnouncementResource
         );
 
         Id<Node> nodeId = Id.random();
-        Response response = resource.put(httpServletRequest, uriInfo, announcement, nodeId);
+        Response response = resource.put(announcement, nodeId);
 
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.ACCEPTED.getStatusCode());
@@ -87,7 +73,7 @@ public class TestDynamicAnnouncementResource
                 new DynamicServiceAnnouncement(Id.<Service>random(), "storage", ImmutableMap.of("key", "new")))
         );
 
-        Response response = resource.put(httpServletRequest, uriInfo, announcement, nodeId);
+        Response response = resource.put(announcement, nodeId);
 
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.ACCEPTED.getStatusCode());
@@ -103,7 +89,7 @@ public class TestDynamicAnnouncementResource
         );
 
         Id<Node> nodeId = Id.random();
-        Response response = resource.put(httpServletRequest, uriInfo, announcement, nodeId);
+        Response response = resource.put(announcement, nodeId);
 
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
@@ -127,7 +113,7 @@ public class TestDynamicAnnouncementResource
         store.put(redNodeId, red);
         store.put(blueNodeId, blue);
 
-        Response response = resource.delete(httpServletRequest, uriInfo, blueNodeId);
+        Response response = resource.delete(blueNodeId);
 
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.NO_CONTENT.getStatusCode());
@@ -138,7 +124,7 @@ public class TestDynamicAnnouncementResource
     @Test
     public void testDeleteMissing()
     {
-        Response response = resource.delete(httpServletRequest, uriInfo, Id.<Node>random());
+        Response response = resource.delete(Id.<Node>random());
 
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode());
@@ -154,7 +140,7 @@ public class TestDynamicAnnouncementResource
         );
 
         Id<Node> nodeId = Id.random();
-        Response response = resource.put(httpServletRequest, uriInfo, announcement, nodeId);
+        Response response = resource.put(announcement, nodeId);
 
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.ACCEPTED.getStatusCode());

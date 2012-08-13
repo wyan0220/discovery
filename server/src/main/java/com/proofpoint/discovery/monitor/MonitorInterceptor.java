@@ -18,11 +18,9 @@ public class MonitorInterceptor implements MethodInterceptor
     {
         boolean success = false;
         long startTime = System.nanoTime();
-        DiscoveryEventType type = methodInvocation.getMethod().getAnnotation(MonitorWith.class).value();
+        DiscoveryEventType type = methodInvocation.getMethod().getAnnotation(ForMonitor.class).type();
         HttpServletRequest httpServletRequest = (HttpServletRequest) methodInvocation.getArguments()[0];
         UriInfo uriInfo = (UriInfo) methodInvocation.getArguments()[1];
-        String requestBody = (type == DiscoveryEventType.DYNAMICANNOUNCEMENT || type == DiscoveryEventType.STATICANNOUNCEMENT) ?
-                (methodInvocation.getArguments()[2].toString()) : "";
         try {
             Object result = methodInvocation.proceed();
             success = true;
@@ -34,7 +32,7 @@ public class MonitorInterceptor implements MethodInterceptor
         }
         finally {
             discoveryMonitor.monitorDiscoveryEvent(type, success, httpServletRequest.getRemoteAddr(),
-                    uriInfo.getRequestUri().toString(), requestBody, startTime);
+                    uriInfo.getRequestUri().toString(), startTime);
         }
     }
 }

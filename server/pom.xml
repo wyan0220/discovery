@@ -165,6 +165,11 @@
             <artifactId>mockito-all</artifactId>
             <version>1.9.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.proofpoint.platform</groupId>
+            <artifactId>dbpool-no-deps</artifactId>
+            <version>0.41-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -20,6 +20,7 @@ import com.google.inject.Key;
 import com.proofpoint.bootstrap.Bootstrap;
 import com.proofpoint.discovery.client.Announcer;
 import com.proofpoint.discovery.client.DiscoveryModule;
+import com.proofpoint.discovery.monitor.DiscoveryMonitorModule;
 import com.proofpoint.discovery.store.ReplicatedStoreModule;
 import com.proofpoint.event.client.HttpEventModule;
 import com.proofpoint.http.server.HttpServerModule;
@@ -48,6 +49,7 @@ public class Main
                                           new JmxModule(),
                                           new JmxHttpRpcModule(),
                                           new DiscoveryServerModule(),
+                                          new DiscoveryMonitorModule(),
                                           new HttpEventModule(),
                                           new TraceTokenModule(),
                                           new DiscoveryModule()

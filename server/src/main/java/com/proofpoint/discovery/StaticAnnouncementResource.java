@@ -16,11 +16,12 @@
 package com.proofpoint.discovery;
 
 import com.google.common.base.Objects;
-import com.proofpoint.discovery.monitor.MonitorWith;
+import com.proofpoint.discovery.monitor.DiscoveryMonitorResourceFilter;
+import com.proofpoint.discovery.monitor.ForMonitor;
 import com.proofpoint.node.NodeInfo;
+import com.sun.jersey.spi.container.ResourceFilters;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -41,6 +42,7 @@ import static java.lang.String.format;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 @Path("/v1/announcement/static")
+@ResourceFilters(DiscoveryMonitorResourceFilter.class)
 public class StaticAnnouncementResource
 {
     private final StaticStore store;
@@ -55,8 +57,8 @@ public class StaticAnnouncementResource
 
     @POST
     @Consumes("application/json")
-    @MonitorWith(STATICANNOUNCEMENT)
-    public Response post(@Context HttpServletRequest httpServletRequest, @Context final UriInfo uriInfo, final StaticAnnouncement announcement)
+    @ForMonitor(type = STATICANNOUNCEMENT, successCodes = {201})
+    public Response post(@Context UriInfo uriInfo, StaticAnnouncement announcement)
     {
         if (!nodeInfo.getEnvironment().equals(announcement.getEnvironment())) {
             return Response.status(BAD_REQUEST)
@@ -80,16 +82,16 @@ public class StaticAnnouncementResource
 
     @GET
     @Produces("application/json")
-    @MonitorWith(STATICANNOUNCEMENTLIST)
-    public Services get(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo)
+    @ForMonitor(type = STATICANNOUNCEMENTLIST, successCodes = {200})
+    public Services get()
     {
         return new Services(nodeInfo.getEnvironment(), store.getAll());
     }
 
     @DELETE
     @Path("{id}")
-    @MonitorWith(STATICANNOUNCEMENTDELETE)
-    public void delete(@Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo, @PathParam("id") final Id<Service> id)
+    @ForMonitor(type = STATICANNOUNCEMENTDELETE, successCodes = {204})
+    public void delete(@PathParam("id") final Id<Service> id)
     {
         store.delete(id);
     }

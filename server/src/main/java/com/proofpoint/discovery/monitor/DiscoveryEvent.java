@@ -14,11 +14,10 @@ public class DiscoveryEvent
     private final boolean success;
     private final String remoteAddress;
     private final String requestUri;
-    private final String requestBodyJson;
     private final Duration processingDuration;
 
     public DiscoveryEvent(DiscoveryEventType type, boolean success, String remoteAddress,
-            String requestUri, String requestBodyJson, Duration processingDuration)
+            String requestUri, Duration processingDuration)
     {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(remoteAddress));
         Preconditions.checkArgument(!Strings.isNullOrEmpty(requestUri));
@@ -27,7 +26,6 @@ public class DiscoveryEvent
         this.success = success;
         this.remoteAddress = remoteAddress;
         this.requestUri = requestUri;
-        this.requestBodyJson = requestBodyJson;
         this.processingDuration = Preconditions.checkNotNull(processingDuration);
     }
 
@@ -53,12 +51,6 @@ public class DiscoveryEvent
     public String getRequestUri()
     {
         return requestUri;
-    }
-
-    @EventField
-    public String getRequestBodyJson()
-    {
-        return requestBodyJson;
     }
 
     @EventField
@@ -88,9 +80,6 @@ public class DiscoveryEvent
         if (!remoteAddress.equals(that.remoteAddress)) {
             return false;
         }
-        if (requestBodyJson != null ? !requestBodyJson.equals(that.requestBodyJson) : that.requestBodyJson != null) {
-            return false;
-        }
         if (!requestUri.equals(that.requestUri)) {
             return false;
         }
@@ -108,7 +97,6 @@ public class DiscoveryEvent
         result = 31 * result + (success ? 1 : 0);
         result = 31 * result + remoteAddress.hashCode();
         result = 31 * result + requestUri.hashCode();
-        result = 31 * result + (requestBodyJson != null ? requestBodyJson.hashCode() : 0);
         result = 31 * result + processingDuration.hashCode();
         return result;
     }
@@ -121,7 +109,6 @@ public class DiscoveryEvent
                 .add("success", success)
                 .add("remoteAddress", remoteAddress)
                 .add("requestUri", requestUri)
-                .add("requestBodyJson", requestBodyJson)
                 .add("processingDuration", processingDuration).toString();
     }
 }

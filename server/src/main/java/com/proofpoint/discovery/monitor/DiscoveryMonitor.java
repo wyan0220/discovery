@@ -19,10 +19,10 @@ public class DiscoveryMonitor
         this.stats = Preconditions.checkNotNull(stats);
     }
 
-    public void monitorDiscoveryEvent(DiscoveryEventType type, boolean success, String remoteAddress, String requestUri, String requestBodyJson, long startTime)
+    public void monitorDiscoveryEvent(DiscoveryEventType type, boolean success, String remoteAddress, String requestUri, long startTime)
     {
-        eventClient.post(new DiscoveryEvent(type, success, remoteAddress, requestUri,
-                requestBodyJson, new Duration(System.nanoTime() - startTime, TimeUnit.NANOSECONDS)));
+         eventClient.post(new DiscoveryEvent(type, success, remoteAddress, requestUri,
+                 new Duration(System.nanoTime() - startTime, TimeUnit.NANOSECONDS)));
         stats.addStats(type, success, startTime);
     }
 
